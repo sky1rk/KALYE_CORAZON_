@@ -1,0 +1,463 @@
+[gd_scene load_steps=45 format=3 uid="uid://c3cis6klge4bj"]
+
+[ext_resource type="Script" uid="uid://qyubpgm5iabx" path="res://scripts/levels/Level2_CalleReal/level_2_callereal.gd" id="1_cropf"]
+[ext_resource type="Texture2D" uid="uid://q4scwarsywwo" path="res://assets/sprites/environment/calle_real/sky.png" id="2_oede4"]
+[ext_resource type="Texture2D" uid="uid://dntsuv0l8ryg5" path="res://assets/sprites/environment/calle_real/-2.png" id="3_cropf"]
+[ext_resource type="PackedScene" uid="uid://br7qkmw53wf1y" path="res://scenes/player/caleb.tscn" id="5_f766k"]
+[ext_resource type="Texture2D" uid="uid://bcxdrokodj6c7" path="res://assets/sprites/environment/calle_real/-1 upd.png" id="6_70ply"]
+[ext_resource type="Script" uid="uid://pwdqtq6jkmhh" path="res://scripts/levels/Level1_QuestonHall/TransitionZone.gd" id="6_d72ua"]
+[ext_resource type="Texture2D" uid="uid://cbys4gftl3au3" path="res://assets/sprites/environment/calle_real/1.png" id="7_70ply"]
+[ext_resource type="PackedScene" uid="uid://hcj5p1abc26k" path="res://scenes/npcs/cat.tscn" id="7_slvls"]
+[ext_resource type="Texture2D" uid="uid://d3i8ar1titoh7" path="res://assets/sprites/environment/calle_real/2.png" id="8_ceyqj"]
+[ext_resource type="PackedScene" uid="uid://dg3g33tcebdod" path="res://scenes/dialoguetrigger/DialogueTrigger.tscn" id="8_qo4vo"]
+[ext_resource type="Texture2D" uid="uid://dpd357uphcoo1" path="res://assets/sprites/environment/calle_real/3.png" id="9_6k287"]
+[ext_resource type="Resource" uid="uid://bvd3r6x8exo37" path="res://dialogue/main.dialogue" id="9_qo4vo"]
+[ext_resource type="Texture2D" uid="uid://gk8wr7ldgryg" path="res://assets/sprites/environment/calle_real/4.png" id="10_0sj1b"]
+[ext_resource type="Texture2D" uid="uid://c2urx83ut75kb" path="res://assets/sprites/minigames/minigame_stall/table.png" id="10_f4ujc"]
+[ext_resource type="PackedScene" uid="uid://gnoaor066jeq" path="res://scenes/npcs/vendor.tscn" id="11_b2g8j"]
+[ext_resource type="PackedScene" uid="uid://bemn2jfgdfhvc" path="res://scenes/minigames/pundong_1.tscn" id="12_2ntxm"]
+[ext_resource type="Script" uid="uid://cntk6xa8bpuna" path="res://scripts/crowd/car_spawner.gd" id="12_70ply"]
+[ext_resource type="PackedScene" uid="uid://dlfcg5barvt7l" path="res://scenes/crowd/crowd_walker_tric3.tscn" id="12_iu4v1"]
+[ext_resource type="PackedScene" uid="uid://06kd13s8x5x4" path="res://scenes/minigames/pundong.tscn" id="13_868re"]
+[ext_resource type="PackedScene" uid="uid://dwrjx7cxarfxs" path="res://scenes/crowd/crowd_walker_tric2.tscn" id="13_c4jp8"]
+[ext_resource type="PackedScene" uid="uid://1q7ea2qned5q" path="res://scenes/crowd/crowd_walker_tric1.tscn" id="13_ceyqj"]
+[ext_resource type="PackedScene" uid="uid://dvgbflholebj1" path="res://scenes/crowd/crowd_walker_tric4.tscn" id="13_ljmqc"]
+[ext_resource type="PackedScene" uid="uid://b3p0lub0vo00a" path="res://scenes/crowd/crowd_walker_jeep3.tscn" id="14_qo4vo"]
+[ext_resource type="PackedScene" uid="uid://bu6rlr7vy7uu8" path="res://scenes/crowd/crowd_walker_jeep1.tscn" id="15_70ply"]
+[ext_resource type="Shader" uid="uid://fwaomjnv67q4" path="res://scenes/effects/blur.gdshader" id="15_bw77a"]
+[ext_resource type="PackedScene" uid="uid://cgd0b1rfvccgj" path="res://scenes/crowd/crowd_walker_jeep4.tscn" id="15_t1o0f"]
+[ext_resource type="PackedScene" uid="uid://ck570qu2c5nrc" path="res://scenes/crowd/crowd_walker_jeep2.tscn" id="16_ceyqj"]
+[ext_resource type="Texture2D" uid="uid://6m2mdrk3p7ww" path="res://assets/sprites/effects/particles/orb_particle.png" id="16_d1mlx"]
+[ext_resource type="Texture2D" uid="uid://bpt112ctewjsv" path="res://assets/sprites/effects/particles/falling_leaves.png" id="17_sgc85"]
+[ext_resource type="AudioStream" uid="uid://djt64k1umb8q2" path="res://assets/bgm/bgm1_FamiliarPlaces.mp3" id="18_c4jp8"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_62nti"]
+size = Vector2(110, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xmad2"]
+size = Vector2(20, 92.689)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1tgic"]
+size = Vector2(162.661, 4.01906)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1ahjd"]
+size = Vector2(38.9513, 26.4687)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_echjx"]
+size = Vector2(74.0306, 44.7173)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_m6m8n"]
+size = Vector2(35.678, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xr5fd"]
+size = Vector2(20, 65)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_6esln"]
+shader = ExtResource("15_bw77a")
+shader_parameter/blur_amount = 1.0
+
+[sub_resource type="Gradient" id="Gradient_da0tw"]
+offsets = PackedFloat32Array(0, 0.234568, 0.765432, 1)
+colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_xmad2"]
+gradient = SubResource("Gradient_da0tw")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_xqwct"]
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(20, 8, 1)
+initial_velocity_max = 0.2
+gravity = Vector3(0, 20, 0)
+scale_min = 0.02
+scale_max = 0.05
+color_ramp = SubResource("GradientTexture1D_xmad2")
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_xmad2"]
+particles_animation = true
+particles_anim_h_frames = 2
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_xmad2"]
+particle_flag_disable_z = true
+emission_shape_scale = Vector3(2000, 5, 1)
+emission_shape = 3
+emission_box_extents = Vector3(1, 1, 1)
+angle_min = 1.07288e-05
+angle_max = 360.0
+direction = Vector3(-1, 0, 0)
+initial_velocity_max = 50.0
+gravity = Vector3(0, 20, 0)
+scale_min = 0.2
+scale_max = 0.5
+anim_offset_max = 1.0
+turbulence_noise_strength = 8.2
+turbulence_noise_scale = 2.671
+turbulence_noise_speed_random = 0.72
+turbulence_influence_min = 0.0
+turbulence_influence_max = 0.02
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qo4vo"]
+size = Vector2(13.253, 20)
+
+[node name="Level2_CalleReal" type="Node2D"]
+script = ExtResource("1_cropf")
+player_scene = ExtResource("5_f766k")
+cat_scene = ExtResource("7_slvls")
+
+[node name="-3" type="CanvasLayer" parent="."]
+follow_viewport_enabled = true
+
+[node name="QhSky" type="Sprite2D" parent="-3"]
+texture = ExtResource("2_oede4")
+
+[node name="-2" type="CanvasLayer" parent="."]
+layer = 2
+follow_viewport_enabled = true
+follow_viewport_scale = 0.8
+
+[node name="Qh1" type="Sprite2D" parent="-2"]
+position = Vector2(0, 303.75)
+scale = Vector2(1.45, 1.45)
+texture = ExtResource("3_cropf")
+
+[node name="-1" type="CanvasLayer" parent="."]
+layer = 3
+follow_viewport_enabled = true
+
+[node name="Qh2" type="Sprite2D" parent="-1"]
+texture = ExtResource("6_70ply")
+
+[node name="0" type="CanvasLayer" parent="."]
+layer = 4
+follow_viewport_enabled = true
+
+[node name="Platforms" type="StaticBody2D" parent="0"]
+position = Vector2(11, 33)
+
+[node name="UpperFloor" type="CollisionShape2D" parent="0/Platforms"]
+position = Vector2(-28, 142)
+scale = Vector2(52.6796, 1.67604)
+shape = SubResource("RectangleShape2D_62nti")
+
+[node name="GroundFloor" type="CollisionShape2D" parent="0/Platforms"]
+position = Vector2(-28, 797)
+scale = Vector2(49.7996, 1.67604)
+shape = SubResource("RectangleShape2D_62nti")
+
+[node name="Boundaries" type="StaticBody2D" parent="0"]
+collision_mask = 2
+
+[node name="BoundaryLeft" type="CollisionShape2D" parent="0/Boundaries"]
+position = Vector2(-1917, 144.1)
+scale = Vector2(8.16, 23.28)
+shape = SubResource("RectangleShape2D_xmad2")
+
+[node name="BoundaryRight" type="CollisionShape2D" parent="0/Boundaries"]
+position = Vector2(1934, 144.1)
+scale = Vector2(8.16, 23.28)
+shape = SubResource("RectangleShape2D_xmad2")
+
+[node name="TransitionZones" type="Node" parent="0"]
+
+[node name="GFLeft" type="Area2D" parent="0/TransitionZones" groups=["TransitionZones"]]
+position = Vector2(-2134, 553)
+scale = Vector2(9.32, 149.04)
+collision_mask = 2
+script = ExtResource("6_d72ua")
+target_position = Vector2(-1681, 5)
+required_action = "ui_up"
+
+[node name="TransitionLeftGF" type="CollisionShape2D" parent="0/TransitionZones/GFLeft"]
+position = Vector2(-33.3691, 0.221417)
+shape = SubResource("RectangleShape2D_1tgic")
+
+[node name="UFRight" type="Area2D" parent="0/TransitionZones" groups=["TransitionZones"]]
+visible = false
+position = Vector2(1819, -347)
+scale = Vector2(4.99999, 1)
+collision_mask = 2
+script = ExtResource("6_d72ua")
+target_position = Vector2(1777, 645)
+required_action = "ui_down"
+
+[node name="TransitionRightUF" type="CollisionShape2D" parent="0/TransitionZones/UFRight"]
+position = Vector2(80.7001, 21)
+scale = Vector2(8.2, 18.52)
+shape = SubResource("RectangleShape2D_1ahjd")
+
+[node name="GFRight" type="Area2D" parent="0/TransitionZones" groups=["TransitionZones"]]
+position = Vector2(2026, 476)
+scale = Vector2(2, 1)
+collision_mask = 2
+script = ExtResource("6_d72ua")
+target_position = Vector2(-1764, 689)
+required_action = "ui_right"
+target_scene_path = "uid://20l8s8unujh4"
+
+[node name="TransitionRightGF" type="CollisionShape2D" parent="0/TransitionZones/GFRight"]
+position = Vector2(152.75, 139.9)
+scale = Vector2(9.8, 11.32)
+shape = SubResource("RectangleShape2D_echjx")
+
+[node name="UFLeft" type="Area2D" parent="0/TransitionZones" groups=["TransitionZones"]]
+position = Vector2(-2481, -214)
+collision_mask = 2
+script = ExtResource("6_d72ua")
+target_position = Vector2(-1630, 683)
+required_action = "ui_down"
+
+[node name="TransitionLeftUF" type="CollisionShape2D" parent="0/TransitionZones/UFLeft"]
+position = Vector2(7, 0)
+scale = Vector2(44.6213, 34.0782)
+shape = SubResource("RectangleShape2D_m6m8n")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="0"]
+visible = false
+position = Vector2(0, 18)
+collision_layer = 4
+collision_mask = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="0/StaticBody2D"]
+position = Vector2(-106, -152)
+scale = Vector2(217.36, 1)
+shape = SubResource("RectangleShape2D_xr5fd")
+
+[node name="DialogueTrigger" parent="0" instance=ExtResource("8_qo4vo")]
+position = Vector2(1192, 591)
+dialogue_resource = ExtResource("9_qo4vo")
+dialogue_title = "calle_real_initial_entry"
+unique_trigger_id = "calle_real_initial_entry"
+freeze_player = false
+required_entry_direction = 2
+
+[node name="DialogueTrigger2" parent="0" instance=ExtResource("8_qo4vo")]
+position = Vector2(7, 616)
+dialogue_resource = ExtResource("9_qo4vo")
+dialogue_title = "puzzle_intro"
+unique_trigger_id = "puzzle_intro_table"
+freeze_player = false
+
+[node name="DialogueTrigger4" parent="0" instance=ExtResource("8_qo4vo")]
+position = Vector2(-1222, 13)
+dialogue_resource = ExtResource("9_qo4vo")
+dialogue_title = "calle_real_balcony_arrival"
+unique_trigger_id = "calle_real_balcony_arrival"
+freeze_player = false
+required_entry_direction = 1
+
+[node name="table" type="Node2D" parent="0"]
+
+[node name="Sprite2D" type="Sprite2D" parent="0/table"]
+position = Vector2(-83, 699)
+scale = Vector2(0.17125, 0.202)
+texture = ExtResource("10_f4ujc")
+
+[node name="vendor" parent="0" instance=ExtResource("11_b2g8j")]
+position = Vector2(-143, 620)
+
+[node name="pundong1" parent="0" instance=ExtResource("12_2ntxm")]
+position = Vector2(38, 566)
+
+[node name="pundong" parent="0" instance=ExtResource("13_868re")]
+position = Vector2(-422, 720)
+
+[node name="pundong2" parent="0" instance=ExtResource("13_868re")]
+position = Vector2(-667, 474)
+
+[node name="pundong3" parent="0" instance=ExtResource("13_868re")]
+position = Vector2(230, -84)
+
+[node name="1" type="CanvasLayer" parent="."]
+layer = 5
+follow_viewport_enabled = true
+follow_viewport_scale = 1.05
+
+[node name="Qh3" type="Sprite2D" parent="1"]
+texture = ExtResource("7_70ply")
+
+[node name="2" type="CanvasLayer" parent="."]
+layer = 6
+follow_viewport_enabled = true
+follow_viewport_scale = 1.07
+
+[node name="Qh4" type="Sprite2D" parent="2"]
+position = Vector2(0, -18.7879)
+texture = ExtResource("8_ceyqj")
+
+[node name="3" type="CanvasLayer" parent="."]
+layer = 7
+follow_viewport_enabled = true
+follow_viewport_scale = 1.08
+
+[node name="Qh5" type="Sprite2D" parent="3"]
+position = Vector2(0, 11.1111)
+texture = ExtResource("9_6k287")
+
+[node name="vehicles left" type="CanvasLayer" parent="."]
+layer = 7
+follow_viewport_enabled = true
+follow_viewport_scale = 1.15
+
+[node name="tric3" type="Node2D" parent="vehicles left"]
+position = Vector2(-989.5, 706.957)
+script = ExtResource("12_70ply")
+crowd_walker_scene = ExtResource("12_iu4v1")
+min_speed = 800.0
+max_speed = 1000.0
+spawn_direction = "Left"
+min_spawn_time = 5.0
+max_spawn_time = 10.0
+
+[node name="tric4" type="Node2D" parent="vehicles left"]
+position = Vector2(-989.5, 706.957)
+script = ExtResource("12_70ply")
+crowd_walker_scene = ExtResource("13_ljmqc")
+min_speed = 600.0
+max_speed = 700.0
+spawn_direction = "Left"
+min_spawn_time = 5.0
+max_spawn_time = 10.0
+
+[node name="jeep3" type="Node2D" parent="vehicles left"]
+position = Vector2(-989.5, 706.957)
+script = ExtResource("12_70ply")
+crowd_walker_scene = ExtResource("14_qo4vo")
+min_speed = 1500.0
+max_speed = 2000.0
+spawn_direction = "Left"
+min_spawn_time = 10.0
+max_spawn_time = 20.0
+
+[node name="jeep4" type="Node2D" parent="vehicles left"]
+position = Vector2(-989.5, 706.957)
+script = ExtResource("12_70ply")
+crowd_walker_scene = ExtResource("15_t1o0f")
+min_speed = 1500.0
+max_speed = 2000.0
+spawn_direction = "Left"
+min_spawn_time = 10.0
+max_spawn_time = 20.0
+
+[node name="CanvasModulate" type="CanvasModulate" parent="vehicles left"]
+color = Color(0.720848, 0.673166, 0.643757, 1)
+
+[node name="4" type="CanvasLayer" parent="."]
+layer = 8
+follow_viewport_enabled = true
+follow_viewport_scale = 1.4
+
+[node name="Qh6" type="Sprite2D" parent="4"]
+position = Vector2(0, -55)
+texture = ExtResource("10_0sj1b")
+
+[node name="vehicles right" type="CanvasLayer" parent="."]
+layer = 11
+follow_viewport_enabled = true
+follow_viewport_scale = 2.0
+
+[node name="tric2" type="Node2D" parent="vehicles right"]
+position = Vector2(-989.5, 764.5)
+script = ExtResource("12_70ply")
+crowd_walker_scene = ExtResource("13_c4jp8")
+min_speed = 800.0
+max_speed = 1000.0
+min_spawn_time = 5.0
+max_spawn_time = 10.0
+
+[node name="tric1" type="Node2D" parent="vehicles right"]
+position = Vector2(-989.5, 764.5)
+script = ExtResource("12_70ply")
+crowd_walker_scene = ExtResource("13_ceyqj")
+min_speed = 600.0
+max_speed = 700.0
+min_spawn_time = 5.0
+max_spawn_time = 10.0
+
+[node name="jeep1" type="Node2D" parent="vehicles right"]
+position = Vector2(-989.5, 764.5)
+script = ExtResource("12_70ply")
+crowd_walker_scene = ExtResource("15_70ply")
+min_speed = 1500.0
+max_speed = 2000.0
+min_spawn_time = 10.0
+max_spawn_time = 20.0
+
+[node name="jeep2" type="Node2D" parent="vehicles right"]
+position = Vector2(-989.5, 764.5)
+script = ExtResource("12_70ply")
+crowd_walker_scene = ExtResource("16_ceyqj")
+min_speed = 1500.0
+max_speed = 2000.0
+min_spawn_time = 10.0
+max_spawn_time = 20.0
+
+[node name="CanvasModulate" type="CanvasModulate" parent="vehicles right"]
+color = Color(0.57377, 0.522104, 0.490105, 1)
+
+[node name="BackBlur" type="CanvasLayer" parent="."]
+layer = 3
+
+[node name="ColorRect" type="ColorRect" parent="BackBlur"]
+material = SubResource("ShaderMaterial_6esln")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -1914.0
+offset_top = -1086.0
+offset_right = -1914.0
+offset_bottom = -1086.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(2.08, 2.08)
+
+[node name="orbs" type="CanvasLayer" parent="."]
+layer = 9
+follow_viewport_enabled = true
+follow_viewport_scale = 2.0
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="orbs"]
+position = Vector2(-8.99982, 10.9999)
+scale = Vector2(-96.4908, -141.855)
+amount = 1000
+texture = ExtResource("16_d1mlx")
+process_material = SubResource("ParticleProcessMaterial_xqwct")
+
+[node name="leaves" type="CanvasLayer" parent="."]
+layer = 10
+follow_viewport_enabled = true
+follow_viewport_scale = 3.0
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="leaves"]
+material = SubResource("CanvasItemMaterial_xmad2")
+position = Vector2(0, -1069)
+amount = 100
+texture = ExtResource("17_sgc85")
+lifetime = 15.0
+visibility_rect = Rect2(-2000, -100, 4000, 2450)
+process_material = SubResource("ParticleProcessMaterial_xmad2")
+
+[node name="BGMPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("18_c4jp8")
+autoplay = true
+
+[node name="MinigameTrigger" type="Area2D" parent="."]
+position = Vector2(-474, 668)
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MinigameTrigger"]
+position = Vector2(52, -4)
+scale = Vector2(9.96, 23.64)
+shape = SubResource("RectangleShape2D_qo4vo")
+
+[connection signal="body_entered" from="0/TransitionZones/GFLeft" to="0/TransitionZones/GFLeft" method="_on_body_entered"]
+[connection signal="body_exited" from="0/TransitionZones/GFLeft" to="0/TransitionZones/GFLeft" method="_on_body_exited"]
+[connection signal="body_entered" from="0/TransitionZones/UFRight" to="0/TransitionZones/UFRight" method="_on_body_entered"]
+[connection signal="body_exited" from="0/TransitionZones/UFRight" to="0/TransitionZones/UFRight" method="_on_body_exited"]
+[connection signal="body_entered" from="0/TransitionZones/GFRight" to="0/TransitionZones/GFRight" method="_on_body_entered"]
+[connection signal="body_exited" from="0/TransitionZones/GFRight" to="0/TransitionZones/GFRight" method="_on_body_exited"]
+[connection signal="body_entered" from="0/TransitionZones/UFLeft" to="0/TransitionZones/UFLeft" method="_on_body_entered"]
+[connection signal="body_exited" from="0/TransitionZones/UFLeft" to="0/TransitionZones/UFLeft" method="_on_body_exited"]
+
+[editable path="0/vendor"]
