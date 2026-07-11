@@ -1,0 +1,146 @@
+[gd_scene load_steps=20 format=3 uid="uid://gnoaor066jeq"]
+
+[ext_resource type="Texture2D" uid="uid://dy264qefwdb7n" path="res://assets/sprites/characters/vendor/vendor-Sheet.png" id="1_5ylqt"]
+[ext_resource type="Script" uid="uid://c103tdtywnmlv" path="res://scripts/npcs/vendor.gd" id="1_xveu6"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xveu6"]
+atlas = ExtResource("1_5ylqt")
+region = Rect2(0, 0, 96, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_s2er3"]
+atlas = ExtResource("1_5ylqt")
+region = Rect2(96, 0, 96, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7j6on"]
+atlas = ExtResource("1_5ylqt")
+region = Rect2(192, 0, 96, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tsdqa"]
+atlas = ExtResource("1_5ylqt")
+region = Rect2(288, 0, 96, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6ye7u"]
+atlas = ExtResource("1_5ylqt")
+region = Rect2(384, 0, 96, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_eh33e"]
+atlas = ExtResource("1_5ylqt")
+region = Rect2(480, 0, 96, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_t3nby"]
+atlas = ExtResource("1_5ylqt")
+region = Rect2(576, 0, 96, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jxno0"]
+atlas = ExtResource("1_5ylqt")
+region = Rect2(672, 0, 96, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_12yhx"]
+atlas = ExtResource("1_5ylqt")
+region = Rect2(768, 0, 96, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v72ic"]
+atlas = ExtResource("1_5ylqt")
+region = Rect2(864, 0, 96, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_igqvf"]
+atlas = ExtResource("1_5ylqt")
+region = Rect2(960, 0, 96, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fnnhi"]
+atlas = ExtResource("1_5ylqt")
+region = Rect2(1056, 0, 96, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xus16"]
+atlas = ExtResource("1_5ylqt")
+region = Rect2(1152, 0, 96, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lpuui"]
+atlas = ExtResource("1_5ylqt")
+region = Rect2(1248, 0, 96, 96)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_xqoyv"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xveu6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_s2er3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7j6on")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tsdqa")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6ye7u")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_eh33e")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_t3nby")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jxno0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_12yhx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v72ic")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_igqvf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fnnhi")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xus16")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lpuui")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ydk6f"]
+size = Vector2(96, 224)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ejsbg"]
+radius = 108.665
+
+[node name="vendor" type="CharacterBody2D"]
+script = ExtResource("1_xveu6")
+
+[node name="CharacterBody2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(232, 60)
+scale = Vector2(2.16667, 2.41667)
+sprite_frames = SubResource("SpriteFrames_xqoyv")
+animation = &"idle"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(232, 64)
+shape = SubResource("RectangleShape2D_ydk6f")
+disabled = true
+
+[node name="EncounterArea" type="Area2D" parent="."]
+position = Vector2(232, 64)
+collision_layer = 6
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="EncounterArea"]
+shape = SubResource("CircleShape2D_ejsbg")
+
+[node name="Label" type="Label" parent="."]
+visible = false
+offset_left = 200.0
+offset_top = -64.0
+offset_right = 255.0
+offset_bottom = -41.0
+text = "Press E"
