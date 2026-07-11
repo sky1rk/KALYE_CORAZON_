@@ -1,0 +1,177 @@
+# To be added for the character intro at the start
+~ game_intro
+"Another day, another adventure."
+"Meet Caleb, a WVSU tech student struggling to keep up with the pressures of college life."
+"Between deadlines, exams, and endless responsibilities, he just wants a break."
+"But something doesn't feel right..."
+"It seems like there is more to see than meets the eye."
+"Welcome to Kalye Corazon."
+"Help Caleb dive into the heart of Western Visayas and uncover the stories and our culture hidden in plain sight."
+=> END
+
+
+~ hallway_thoughts
+Caleb: "Another project due, another exam to cram for."
+Caleb: "This hallway feels like a tunnel with no end."
+Caleb: "I just need... a break."
+=> END
+
+~ faculty_dash_warning
+Caleb: "Professor?!"
+=> END
+
+
+~ cat_encounter
+Caleb: "What is this cat up to..."
+- Follow the cat.
+	do DialogueManager.mutated.emit({"mutation": "follow_cat"})
+	Mango: "Meow"
+	Caleb: "You're responsible for that paper situation up there, aren't you?"
+	Mango: "Meow"
+- Resist the urge.
+	Everyready: "Meow!"
+	Caleb: "You made that mess, didn't you?"
+=> END
+
+~ faculty_intro
+Faculty: Caleb, you're just in time.
+Faculty: I need help sorting these books before class.
+- Offer to help.
+	do DialogueManager.mutated.emit({"mutation": "help_faculty"})
+	Caleb: Of course, Professor. I can help.
+	Faculty: Thank you. Follow me.
+- Say you're busy.
+	Caleb: Sorry, Professor. I can't help right now.
+	Faculty: That's alright. Be careful in the hallway.
+=> END
+
+~ faculty_escort_pause
+Faculty: Just put those books on the table.
+do DialogueManager.mutated.emit({"mutation": "faculty_cultural_echo_start"})
+do wait(5)
+do DialogueManager.mutated.emit({"mutation": "faculty_pause_sound_stop"})
+Caleb: "Did you hear that?"
+Faculty: "Hear what, Caleb?"
+Caleb: "Nothing ... never mind, Prof."
+Faculty: "Feel free to check the books,I can lend them to you if you want."
+Faculty: "It’s my way of thanking you for your help."
+=> END
+
+~ faculty_leave
+Faculty: "I'll leave you to it, Caleb."
+Faculty: "Take your time with the books."
+Caleb: "Thank you, Prof."
+=> END
+
+~ bookshelf_papers_intro
+Caleb: "That sound again..." 
+Caleb: "Wait. Is that trash on the bookshelf?"
+Caleb: "I should remove them while I'm here."
+=> END
+
+~ paper_minigame_start
+Caleb: "Why are these papers scattered all over the floor?"
+Caleb: "They have letters written on them..."
+Caleb: "Maybe they mean something."
+do DialogueManager.mutated.emit({"mutation": "start_minigame"})
+=> END
+
+~ paper_minigame_success
+Caleb: "Persevere..."
+Caleb: "Huh, I wonder who left those there. Well, Some things around the university carry stories."
+=> END
+
+~ office_post_minigame_choice
+Caleb: "I should decide whether to keep looking around or head out."
+- Leave the office.
+	do DialogueManager.mutated.emit({"mutation": "office_leave"})
+- Stay in the office.
+	do DialogueManager.mutated.emit({"mutation": "office_stay"})
+	Caleb: "I'll keep scanning the office."
+=> END
+
+~ follow_cat_exit_choices
+Caleb: "Where will you take me? Are there more stories waiting outside these halls?"
+- Stay.
+	do DialogueManager.mutated.emit({"mutation": "stay_in_level1"})
+	Caleb: "I need to think for a bit."
+- Follow further.
+	do DialogueManager.mutated.emit({"mutation": "proceed_to_level2"})
+=> END
+
+
+~ resist_urge_exit_choices
+Caleb: "I should get going. The journey isn't over yet."
+- Stay.
+	do DialogueManager.mutated.emit({"mutation": "stay_in_level1"})
+	Caleb: "I need to think for a bit."
+- Leave Queston Hall.
+	do DialogueManager.mutated.emit({"mutation": "proceed_to_level2"})
+=> END
+
+~ go_down_queston_hall
+Caleb: "Maybe I should head downstairs to clear my mind."
+=> END
+
+~ go_up_queston_hall
+Caleb: "Maybe I should head back upstairs."
+=> END
+
+~ cat_first_see
+do DialogueManager.mutated.emit({"mutation": "level1_cat_cultural_echo_start"})
+Caleb: "Is that a cat?"
+=> END
+
+~ cant_go_there
+Caleb: "Oh, nothing to see here."
+=> END
+
+# New Dialogue for Level 2: Calle Real (Caleb and Eveready only)
+
+~ calle_real_initial_entry_cat
+Caleb: "Woah... it's a lot. The noise, the people... I can barely think."
+Mango: "Keep your head up, kid. "
+Caleb: "Woah, what? When did this cat changed colors?"
+=> END
+
+~ calle_real_initial_entry
+Caleb: "Hmm. This is weird."
+Caleb: "This place is usually bustling with people. Why is there only one stall left open?"
+=> END
+
+~ calle_real_street_vehicles_cat
+Caleb: "Tricycles, jeepneys... they're everywhere. Zipping past, horns blaring."
+Mango: "Meow"
+Caleb: "Hmm. I've passed through this place before."
+Caleb: "That's weird though. This place is usually bustling with people. Why is there only one stall left open?"
+Mango: "Meow"
+Caleb: "Look, there's a vendor. Lets ask him."
+=> END
+
+~ puzzle_intro
+Caleb: "Why are these old photos scattered all over the floor?"
+Caleb: "One of them is torn apart."
+Caleb: "Wait, that sound . . why is it getting stronger . ."
+do DialogueManager.mutated.emit({"mutation": "start_minigame"})
+=> END
+
+~ calle_real_vendor_intro
+Vendor: "Welcome to Calle Real."
+Caleb: "Thanks."
+Vendor: "I've laid out some local items on the table."
+Vendor: "Why don't you take a closer look?"
+Vendor: "See if anything catches your eye.
+
+- Look around some more.
+	do DialogueManager.mutated.emit({"mutation": "accept_vendor_offer"})
+- Leave.
+	do DialogueManager.mutated.emit({"mutation": "explore_calle_real"})
+	Caleb: "I'll take a look around first."
+	Vendor: "Take your time. Explore the beauty of calle real."
+=> END
+
+~ calle_real_balcony_arrival
+Caleb: Funny. On the first floor, it's almost completely empty, yet the traffic outside is so loud you can barely think.
+Caleb: But looking at the whole picture from up here...
+Caleb: You realize how peaceful it is to just step away from the noise.
+=> END
