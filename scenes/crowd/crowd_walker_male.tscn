@@ -1,0 +1,59 @@
+[gd_scene load_steps=9 format=3 uid="uid://dtigk3glu13m4"]
+
+[ext_resource type="Script" uid="uid://bmonvn0joq0pm" path="res://scripts/crowd/crowd_walker.gd" id="1_56h13"]
+[ext_resource type="Texture2D" uid="uid://bh20ubx4edcng" path="res://assets/sprites/crowd/male_student.png" id="2_auw0w"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_o2ask"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hmir7"]
+atlas = ExtResource("2_auw0w")
+region = Rect2(0, 0, 256, 512)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7a43l"]
+atlas = ExtResource("2_auw0w")
+region = Rect2(256, 0, 256, 512)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uk516"]
+atlas = ExtResource("2_auw0w")
+region = Rect2(512, 0, 256, 512)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3w45i"]
+atlas = ExtResource("2_auw0w")
+region = Rect2(768, 0, 256, 512)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_d4la3"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hmir7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7a43l")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uk516")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3w45i")
+}],
+"loop": true,
+"name": &"walk",
+"speed": 5.0
+}]
+
+[node name="CrowdWalker" type="Area2D"]
+script = ExtResource("1_56h13")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+scale = Vector2(7.77633, 18.36)
+shape = SubResource("RectangleShape2D_o2ask")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+scale = Vector2(0.68, 0.68)
+sprite_frames = SubResource("SpriteFrames_d4la3")
+animation = &"walk"
+frame = 2
+frame_progress = 0.906033
+
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="."]
+scale = Vector2(10.64, 3.04)

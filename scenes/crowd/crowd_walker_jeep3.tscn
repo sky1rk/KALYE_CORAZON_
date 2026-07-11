@@ -1,0 +1,150 @@
+[gd_scene load_steps=22 format=3 uid="uid://b3p0lub0vo00a"]
+
+[ext_resource type="Script" uid="uid://bmonvn0joq0pm" path="res://scripts/crowd/crowd_walker.gd" id="1_8wgia"]
+[ext_resource type="Texture2D" uid="uid://cwxai68l1mdjp" path="res://assets/sprites/crowd/jeep3.png" id="2_8wgia"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_o2ask"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_b54yf"]
+atlas = ExtResource("2_8wgia")
+region = Rect2(0, 0, 284, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_l61ac"]
+atlas = ExtResource("2_8wgia")
+region = Rect2(284, 0, 284, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r2dkv"]
+atlas = ExtResource("2_8wgia")
+region = Rect2(568, 0, 284, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v4t3a"]
+atlas = ExtResource("2_8wgia")
+region = Rect2(852, 0, 284, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7m0dy"]
+atlas = ExtResource("2_8wgia")
+region = Rect2(1136, 0, 284, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_on0tr"]
+atlas = ExtResource("2_8wgia")
+region = Rect2(1420, 0, 284, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ptwgi"]
+atlas = ExtResource("2_8wgia")
+region = Rect2(1704, 0, 284, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_g7r6n"]
+atlas = ExtResource("2_8wgia")
+region = Rect2(1988, 0, 284, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fkfm6"]
+atlas = ExtResource("2_8wgia")
+region = Rect2(2272, 0, 284, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ugjxu"]
+atlas = ExtResource("2_8wgia")
+region = Rect2(2556, 0, 284, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jqvbg"]
+atlas = ExtResource("2_8wgia")
+region = Rect2(2840, 0, 284, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pyb26"]
+atlas = ExtResource("2_8wgia")
+region = Rect2(3124, 0, 284, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_byvbb"]
+atlas = ExtResource("2_8wgia")
+region = Rect2(3408, 0, 284, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v1ltm"]
+atlas = ExtResource("2_8wgia")
+region = Rect2(3692, 0, 284, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_no35n"]
+atlas = ExtResource("2_8wgia")
+region = Rect2(3976, 0, 284, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0rm0a"]
+atlas = ExtResource("2_8wgia")
+region = Rect2(4260, 0, 284, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pbdp5"]
+atlas = ExtResource("2_8wgia")
+region = Rect2(4544, 0, 284, 256)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_d4la3"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_b54yf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_l61ac")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_r2dkv")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v4t3a")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7m0dy")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_on0tr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ptwgi")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_g7r6n")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fkfm6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ugjxu")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jqvbg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_pyb26")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_byvbb")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v1ltm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_no35n")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0rm0a")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_pbdp5")
+}],
+"loop": true,
+"name": &"walk",
+"speed": 10.0
+}]
+
+[node name="CrowdWalker" type="Area2D"]
+script = ExtResource("1_8wgia")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+scale = Vector2(25.6163, 18.36)
+shape = SubResource("RectangleShape2D_o2ask")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(147, -78)
+scale = Vector2(3.55421, 3.55421)
+sprite_frames = SubResource("SpriteFrames_d4la3")
+animation = &"walk"
+frame_progress = 0.852845
+
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="."]
+scale = Vector2(121.841, 3.79402)
