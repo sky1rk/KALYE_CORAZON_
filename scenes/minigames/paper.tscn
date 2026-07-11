@@ -1,0 +1,21 @@
+[gd_scene load_steps=3 format=3 uid="uid://c1d865jid5nrl"]
+
+[ext_resource type="Texture2D" uid="uid://bdh2yn8w8tbo0" path="res://assets/sprites/minigames/minigame_office/blurred-image (1).png" id="1_bbf4d"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ybc7j"]
+radius = 51.1566
+
+[node name="paper" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+light_mask = 4
+visibility_layer = 4
+position = Vector2(1, 6)
+scale = Vector2(0.079251, 0.113958)
+texture = ExtResource("1_bbf4d")
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(1, 7)
+shape = SubResource("CircleShape2D_ybc7j")

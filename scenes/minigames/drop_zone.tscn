@@ -1,0 +1,17 @@
+[gd_scene load_steps=4 format=3 uid="uid://cf17vcgmndly8"]
+
+[ext_resource type="Script" uid="uid://cmd3mn2cap8ki" path="res://scripts/minigames/drop_zone.gd" id="1_sbm4s"]
+[ext_resource type="Texture2D" uid="uid://cax3r83rs8dt7" path="res://assets/sprites/minigames/minigame_persevere/dropzone.png" id="2_1obt4"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6nei0"]
+
+[node name="DropZone" type="Area2D"]
+scale = Vector2(0.44, 0.44)
+script = ExtResource("1_sbm4s")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_1obt4")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+scale = Vector2(23.3659, 23.2)
+shape = SubResource("RectangleShape2D_6nei0")

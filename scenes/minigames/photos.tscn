@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3 uid="uid://bw6dk7bl7x5co"]
+
+[ext_resource type="Script" uid="uid://dfcdy5hnk3xff" path="res://scripts/minigames/photos.gd" id="1_t8vxc"]
+[ext_resource type="Texture2D" uid="uid://d1fn1avjxg83x" path="res://assets/sprites/minigames/minigame_stall/photos.png" id="2_rq73f"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5usvk"]
+size = Vector2(27, 18)
+
+[node name="photos" type="Node2D"]
+script = ExtResource("1_t8vxc")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(17, 12)
+scale = Vector2(0.0295276, 0.0258621)
+texture = ExtResource("2_rq73f")
+
+[node name="Area2D" type="Area2D" parent="."]
+position = Vector2(15, 8)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(0, 1)
+shape = SubResource("RectangleShape2D_5usvk")

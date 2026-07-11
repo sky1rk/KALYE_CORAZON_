@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://ca0slg8h2m20n"]
+
+[ext_resource type="Texture2D" uid="uid://bbc6xb67tpu31" path="res://assets/sprites/minigames/minigame_office/books-stack-Sheet.png" id="1_puhyf"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_b4nvf"]
+size = Vector2(80, 72)
+
+[node name="books" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_puhyf")
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(0, -1)
+shape = SubResource("RectangleShape2D_b4nvf")

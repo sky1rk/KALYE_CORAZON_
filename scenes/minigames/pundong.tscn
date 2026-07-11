@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3 uid="uid://06kd13s8x5x4"]
+
+[ext_resource type="Texture2D" uid="uid://c1putmv6lcmu6" path="res://assets/sprites/minigames/minigame_stall/artifact-lvl2.png" id="1_4om0a"]
+[ext_resource type="Script" uid="uid://din2715nhkkuv" path="res://scripts/minigames/pundong.gd" id="1_lj2et"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lj2et"]
+size = Vector2(72, 48.8889)
+
+[node name="pundong" type="Node2D"]
+script = ExtResource("1_lj2et")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(48.5, 47.5)
+scale = Vector2(0.131944, 0.134722)
+texture = ExtResource("1_4om0a")
+
+[node name="Area2D" type="Area2D" parent="."]
+position = Vector2(48, 40)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(4, 4)
+shape = SubResource("RectangleShape2D_lj2et")

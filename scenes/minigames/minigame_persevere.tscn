@@ -1,0 +1,161 @@
+[gd_scene load_steps=13 format=3 uid="uid://c6xg3c1l1ynpg"]
+
+[ext_resource type="Script" uid="uid://cfac73dv3fl5f" path="res://scripts/minigames/minigame_persevere.gd" id="1_1l20l"]
+[ext_resource type="Texture2D" uid="uid://bav2uwd8t8788" path="res://assets/sprites/minigames/minigame_persevere/floor.png" id="2_l37kl"]
+[ext_resource type="PackedScene" uid="uid://cf17vcgmndly8" path="res://scenes/minigames/drop_zone.tscn" id="3_tykwt"]
+[ext_resource type="PackedScene" uid="uid://c7x8xfvvf8e7" path="res://scenes/minigames/letter_tile.tscn" id="4_rq4iy"]
+[ext_resource type="Texture2D" uid="uid://dgrqenigaifwl" path="res://assets/sprites/minigames/minigame_persevere/1.png" id="5_qv6hf"]
+[ext_resource type="Texture2D" uid="uid://dms0dtwq2l1yt" path="res://assets/sprites/minigames/minigame_persevere/2.png" id="6_fg8im"]
+[ext_resource type="Texture2D" uid="uid://2imy85mbvt8p" path="res://assets/sprites/minigames/minigame_persevere/3.png" id="7_nkx3x"]
+[ext_resource type="Texture2D" uid="uid://4xjoob05eqla" path="res://assets/sprites/minigames/minigame_persevere/4.png" id="8_fufkn"]
+[ext_resource type="Texture2D" uid="uid://d1cntmhjv5ua4" path="res://assets/sprites/minigames/minigame_persevere/5.png" id="9_r3h4p"]
+[ext_resource type="Texture2D" uid="uid://s837x4whlwkg" path="res://assets/sprites/minigames/minigame_persevere/6.png" id="10_j6mna"]
+[ext_resource type="FontFile" uid="uid://t5il60al4iak" path="res://assets/fonts/VT323-Regular.ttf" id="11_hsreu"]
+[ext_resource type="AudioStream" uid="uid://djt64k1umb8q2" path="res://assets/bgm/bgm1_FamiliarPlaces.mp3" id="12_l37kl"]
+
+[node name="PersevereMinigame" type="Node2D"]
+script = ExtResource("1_1l20l")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(965, 538)
+scale = Vector2(1.07551, 1.07551)
+texture = ExtResource("2_l37kl")
+
+[node name="DropZones" type="Node2D" parent="."]
+
+[node name="DropZone" parent="DropZones" instance=ExtResource("3_tykwt")]
+position = Vector2(258, 532)
+scale = Vector2(0.446572, 0.447836)
+correct_letter_id = "PE"
+
+[node name="DropZone2" parent="DropZones" instance=ExtResource("3_tykwt")]
+position = Vector2(528, 532)
+correct_letter_id = "R"
+
+[node name="DropZone3" parent="DropZones" instance=ExtResource("3_tykwt")]
+position = Vector2(794, 532)
+correct_letter_id = "SE"
+
+[node name="DropZone4" parent="DropZones" instance=ExtResource("3_tykwt")]
+position = Vector2(1063, 532)
+correct_letter_id = "V"
+
+[node name="DropZone5" parent="DropZones" instance=ExtResource("3_tykwt")]
+position = Vector2(1331, 532)
+correct_letter_id = "ER"
+
+[node name="DropZone6" parent="DropZones" instance=ExtResource("3_tykwt")]
+position = Vector2(1588, 532)
+correct_letter_id = "E"
+
+[node name="LetterTiles" type="Node2D" parent="."]
+
+[node name="LetterTile" parent="LetterTiles" instance=ExtResource("4_rq4iy")]
+position = Vector2(301, 918)
+letter_id = "PE"
+
+[node name="Sprite2D" parent="LetterTiles/LetterTile" index="0"]
+scale = Vector2(1.25927, 1.25927)
+texture = ExtResource("5_qv6hf")
+
+[node name="LetterTile2" parent="LetterTiles" instance=ExtResource("4_rq4iy")]
+position = Vector2(1681, 820)
+letter_id = "R"
+
+[node name="Sprite2D" parent="LetterTiles/LetterTile2" index="0"]
+scale = Vector2(1.31934, 1.31934)
+texture = ExtResource("6_fg8im")
+
+[node name="LetterTile3" parent="LetterTiles" instance=ExtResource("4_rq4iy")]
+position = Vector2(1082, 241)
+letter_id = "SE"
+
+[node name="Sprite2D" parent="LetterTiles/LetterTile3" index="0"]
+scale = Vector2(1.29252, 1.29252)
+texture = ExtResource("7_nkx3x")
+
+[node name="LetterTile4" parent="LetterTiles" instance=ExtResource("4_rq4iy")]
+position = Vector2(1455, 197)
+letter_id = "V"
+
+[node name="Sprite2D" parent="LetterTiles/LetterTile4" index="0"]
+scale = Vector2(1.23448, 1.23448)
+texture = ExtResource("8_fufkn")
+
+[node name="LetterTile5" parent="LetterTiles" instance=ExtResource("4_rq4iy")]
+position = Vector2(707, 863)
+letter_id = "ER"
+
+[node name="Sprite2D" parent="LetterTiles/LetterTile5" index="0"]
+scale = Vector2(1.47377, 1.47377)
+texture = ExtResource("9_r3h4p")
+
+[node name="LetterTile6" parent="LetterTiles" instance=ExtResource("4_rq4iy")]
+position = Vector2(370, 189)
+letter_id = "E"
+
+[node name="Sprite2D" parent="LetterTiles/LetterTile6" index="0"]
+scale = Vector2(1.31771, 1.31771)
+texture = ExtResource("10_j6mna")
+
+[node name="SuccessScreen" type="CanvasLayer" parent="."]
+visible = false
+
+[node name="ColorRect" type="ColorRect" parent="SuccessScreen"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.203922, 0.160784, 0, 0.32549)
+
+[node name="Panel" type="Panel" parent="SuccessScreen/ColorRect"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -630.0
+offset_top = 214.0
+offset_right = -590.0
+offset_bottom = 254.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(29.9088, 3.72)
+
+[node name="Label" type="Label" parent="SuccessScreen/ColorRect/Panel"]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = 304.0
+offset_bottom = 39.0
+scale = Vector2(0.0451604, 0.376344)
+theme_override_fonts/font = ExtResource("11_hsreu")
+theme_override_font_sizes/font_size = 42
+text = "Congratulations! You formed the word PERSEVERE
+In Hiligaynon, this is 'Padayon'—to keep going."
+
+[node name="Button" type="Button" parent="SuccessScreen/ColorRect/Panel"]
+layout_mode = 0
+offset_left = 30.7602
+offset_top = 52.4194
+offset_right = 192.76
+offset_bottom = 115.419
+scale = Vector2(0.0566172, 0.302551)
+theme_override_fonts/font = ExtResource("11_hsreu")
+theme_override_font_sizes/font_size = 55
+text = "padayon"
+
+[node name="BGMPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("12_l37kl")
+autoplay = true
+
+[connection signal="pressed" from="SuccessScreen/ColorRect/Panel/Button" to="." method="_on_button_pressed"]
+
+[editable path="LetterTiles/LetterTile"]
+[editable path="LetterTiles/LetterTile2"]
+[editable path="LetterTiles/LetterTile3"]
+[editable path="LetterTiles/LetterTile4"]
+[editable path="LetterTiles/LetterTile5"]
+[editable path="LetterTiles/LetterTile6"]

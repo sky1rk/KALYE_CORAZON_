@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://c7x8xfvvf8e7"]
+
+[ext_resource type="Script" uid="uid://dbsxi68ajq165" path="res://scripts/minigames/letter_tile.gd" id="1_n08e0"]
+[ext_resource type="Texture2D" uid="uid://cax3r83rs8dt7" path="res://assets/sprites/minigames/minigame_persevere/dropzone.png" id="2_v2s6l"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_pf31a"]
+
+[node name="LetterTile" type="Area2D"]
+z_index = 10
+scale = Vector2(0.52, 0.52)
+script = ExtResource("1_n08e0")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.88, 0.88)
+texture = ExtResource("2_v2s6l")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+scale = Vector2(11.76, 10.92)
+shape = SubResource("RectangleShape2D_pf31a")
