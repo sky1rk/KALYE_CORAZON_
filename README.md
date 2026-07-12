@@ -3,7 +3,7 @@
 **Kalye Corazon** is a 2D narrative game focused on exploring the culture, heritage, and traditions of Western Visayas.  
 You play as **Caleb**, a WVSU tech student whose journey leads him through meaningful spaces around Iloilo, where everyday places reveal stories of identity, history, and local life.
 
-Guided by a mysterious cat (**Mango**), Caleb interacts with local characters, explores heritage-rich environments, and discovers cultural artifacts that connect him to the region’s traditions.
+Caleb interacts with local characters, explores heritage-rich environments, and discovers cultural artifacts that connect him to the region’s traditions.
 
 The game blends side-scrolling exploration, branching dialogue, and story-driven minigames to introduce players to Western Visayas culture in an interactive way.
 
