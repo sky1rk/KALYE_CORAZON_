@@ -23,8 +23,8 @@ script = ExtResource("1_ne6wf")
 position = Vector2(960, 540)
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(954, 540)
-scale = Vector2(1.11562, 1.125)
+position = Vector2(961, 543)
+scale = Vector2(1.15311, 1.16897)
 texture = ExtResource("1_gded3")
 
 [node name="Table" type="Node2D" parent="."]
