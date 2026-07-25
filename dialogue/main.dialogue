@@ -170,6 +170,14 @@ Vendor: "See if anything catches your eye.
 	Vendor: "Take your time. Explore the beauty of calle real."
 => END
 
+~ calle_real_vendor_choice
+Vendor: "Look around some more or leave?"
+- Look around some more.
+	do DialogueManager.mutated.emit({"mutation": "accept_vendor_offer"})
+- Leave.
+	do DialogueManager.mutated.emit({"mutation": "explore_calle_real"})
+=> END
+
 ~ calle_real_balcony_arrival
 Caleb: Funny. On the first floor, it's almost completely empty, yet the traffic outside is so loud you can barely think.
 Caleb: But looking at the whole picture from up here...

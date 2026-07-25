@@ -20,6 +20,9 @@ const REWARD_BACKDROP_FADE_DURATION := 0.18
 @onready var scene_camera: Camera2D = $Camera2D
 @onready var player: CharacterBody2D = get_node_or_null("player") as CharacterBody2D
 @onready var player_camera: Camera2D = get_node_or_null("player/Camera2D") as Camera2D
+@onready var vendor: Node2D = get_node_or_null("vendor") as Node2D
+@onready var vendor_area: Area2D = get_node_or_null("vendor/EncounterArea") as Area2D
+@onready var vendor_prompt: Label = get_node_or_null("vendor/Label") as Label
 @onready var stacked_photos: Node2D = $stackedphotos
 @onready var stacked_photos_sprite: Sprite2D = $stackedphotos/photos/Sprite2D
 @onready var stacked_photos_area: Area2D = $stackedphotos/photos/Area2D
@@ -32,6 +35,9 @@ var stacked_photos_tween: Tween = null
 var opening_puzzle := false
 var returning_to_calle_real := false
 var return_to_calle_real_after_dialogue := false
+var vendor_interaction_active := false
+var vendor_interaction_pending := false
+var vendor_choice_open := false
 var visible_pundong: Node2D = null
 var pundong_base_scales: Dictionary = {}
 var pundong_tween: Tween = null
@@ -51,6 +57,7 @@ func _ready() -> void:
 		scene_camera.global_position = Vector2(960, 540)
 
 	_setup_stacked_photos_interaction()
+	_setup_vendor_interaction()
 	_connect_dialogue_mutations()
 	_update_pundong_visibility()
 	_setup_pundong_interactions()
@@ -64,11 +71,17 @@ func _ready() -> void:
 func _exit_tree() -> void:
 	if DialogueManager.mutated.is_connected(_on_dialogue_mutated):
 		DialogueManager.mutated.disconnect(_on_dialogue_mutated)
+	if DialogueManager.dialogue_ended.is_connected(_on_dialogue_ended):
+		DialogueManager.dialogue_ended.disconnect(_on_dialogue_ended)
 	if DialogueManager.dialogue_ended.is_connected(_on_vendor_leave_dialogue_ended):
 		DialogueManager.dialogue_ended.disconnect(_on_vendor_leave_dialogue_ended)
 
 
 func _start_vendor_intro_dialogue() -> void:
+	vendor_interaction_active = false
+	vendor_interaction_pending = false
+	vendor_choice_open = false
+	_set_vendor_prompt_visible(false)
 	balloon.show()
 	balloon.start(dialogue_res, "calle_real_vendor_intro")
 
@@ -76,17 +89,27 @@ func _start_vendor_intro_dialogue() -> void:
 func _connect_dialogue_mutations() -> void:
 	if not DialogueManager.mutated.is_connected(_on_dialogue_mutated):
 		DialogueManager.mutated.connect(_on_dialogue_mutated)
+	if not DialogueManager.dialogue_ended.is_connected(_on_dialogue_ended):
+		DialogueManager.dialogue_ended.connect(_on_dialogue_ended)
 
 
 func _on_dialogue_mutated(data: Dictionary) -> void:
 	match data.get("mutation", ""):
 		"accept_vendor_offer":
 			# Stay in the table scene so the player can inspect the photos.
+			vendor_interaction_pending = true
 			return
 		"explore_calle_real":
+			vendor_interaction_pending = false
 			_return_to_calle_real_when_dialogue_ends()
 
 
+func _process(_delta: float) -> void:
+	if not vendor_interaction_active or vendor_choice_open or not vendor_area:
+		return
+
+	if Input.is_action_just_pressed("interact") and vendor_prompt and vendor_prompt.visible:
+		_open_vendor_choice_dialogue()
 func _input(event: InputEvent) -> void:
 	if opening_puzzle or not _is_left_click(event):
 		return
@@ -154,13 +177,13 @@ func _place_player_after_table_puzzle() -> void:
 	if not GameState.get_story_flag(TABLE_PUZZLE_FINISHED_FLAG):
 		return
 
-	var player := get_node_or_null("player") as CharacterBody2D
-	if not player:
+	var table_player := get_node_or_null("player") as CharacterBody2D
+	if not table_player:
 		return
 
-	player.global_position = TABLE_PLAYER_CENTER_POSITION
-	if player.has_method("set_input_enabled"):
-		player.set_input_enabled(true)
+	table_player.global_position = TABLE_PLAYER_CENTER_POSITION
+	if table_player.has_method("set_input_enabled"):
+		table_player.set_input_enabled(true)
 
 
 func _update_pundong_visibility() -> void:
@@ -400,10 +423,92 @@ func _return_to_calle_real_when_dialogue_ends() -> void:
 	DialogueManager.dialogue_ended.connect(_on_vendor_leave_dialogue_ended, CONNECT_ONE_SHOT)
 
 
+func _on_dialogue_ended(_resource: DialogueResource) -> void:
+	if return_to_calle_real_after_dialogue:
+		return
+
+	if vendor_choice_open:
+		vendor_choice_open = false
+		return
+
+	if vendor_interaction_pending:
+		vendor_interaction_pending = false
+		_enable_vendor_interaction()
+
+
 func _on_vendor_leave_dialogue_ended(_resource: DialogueResource) -> void:
 	call_deferred("_return_to_calle_real")
 
 
+func _setup_vendor_interaction() -> void:
+	if not vendor or not vendor_area or not vendor_prompt:
+		return
+
+	vendor_prompt.hide()
+	vendor_area.monitoring = true
+	if not vendor_area.body_entered.is_connected(_on_vendor_body_entered):
+		vendor_area.body_entered.connect(_on_vendor_body_entered)
+	if not vendor_area.body_exited.is_connected(_on_vendor_body_exited):
+		vendor_area.body_exited.connect(_on_vendor_body_exited)
+
+	if GameState.get_story_flag(TABLE_PUZZLE_STARTED_FLAG):
+		_enable_vendor_interaction()
+
+
+func _on_vendor_body_entered(body: Node2D) -> void:
+	if not vendor_interaction_active or not _is_player_body(body):
+		return
+
+	vendor_prompt.show()
+
+
+func _on_vendor_body_exited(body: Node2D) -> void:
+	if not _is_player_body(body):
+		return
+
+	_set_vendor_prompt_visible(false)
+
+
+func _enable_vendor_interaction() -> void:
+	if not vendor or not vendor_area or not vendor_prompt:
+		return
+
+	vendor_interaction_active = true
+	vendor_area.monitoring = true
+	call_deferred("_sync_vendor_prompt_state")
+
+
+func _sync_vendor_prompt_state() -> void:
+	if not vendor_interaction_active or not vendor_area or not vendor_prompt:
+		return
+
+	if player and vendor_area.overlaps_body(player):
+		vendor_prompt.show()
+	else:
+		vendor_prompt.hide()
+
+
+func _set_vendor_prompt_visible(should_show: bool) -> void:
+	if not vendor_prompt:
+		return
+
+	if should_show and vendor_interaction_active:
+		vendor_prompt.show()
+	else:
+		vendor_prompt.hide()
+
+
+func _open_vendor_choice_dialogue() -> void:
+	if vendor_choice_open:
+		return
+
+	vendor_choice_open = true
+	balloon.show()
+	balloon.start(dialogue_res, "calle_real_vendor_choice")
+
+
+func _is_player_body(body: Node) -> bool:
+	return body == player or body.is_in_group("Player") or body.is_in_group("player") or body.name == "player" or body.name == "Caleb"
 func _tween_stacked_photos_scale(target_scale: Vector2) -> void:
 	if stacked_photos_tween and stacked_photos_tween.is_valid():
 		stacked_photos_tween.kill()
