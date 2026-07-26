@@ -27,7 +27,7 @@ animations = [{
 }]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_lj2et"]
-size = Vector2(100.444, 76.8889)
+size = Vector2(42.6666, 39.1111)
 
 [node name="pundong" type="Node2D"]
 script = ExtResource("1_lj2et")

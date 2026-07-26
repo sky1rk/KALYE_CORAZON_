@@ -281,9 +281,11 @@ size = Vector2(172, 280)
 radius = 225.18
 
 [node name="Faculty" type="CharacterBody2D"]
+texture_filter = 1
 script = ExtResource("1_ssequ")
 
 [node name="CharacterBody2D" type="AnimatedSprite2D" parent="."]
+texture_filter = 1
 position = Vector2(-8, 8)
 scale = Vector2(3.91667, 5.16667)
 sprite_frames = SubResource("SpriteFrames_hnd0y")

@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://bx0uu2m6v37q1"]
+[gd_scene load_steps=13 format=3 uid="uid://bx0uu2m6v37q1"]
 
 [ext_resource type="Texture2D" uid="uid://da1e6jurgllnu" path="res://assets/sprites/minigames/minigame_stall/stall.png" id="1_gded3"]
 [ext_resource type="Script" uid="uid://b748fr5e6p4mx" path="res://scripts/minigames/table.gd" id="1_ne6wf"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://06kd13s8x5x4" path="res://scenes/minigames/pundong.tscn" id="7_j4okl"]
 [ext_resource type="PackedScene" uid="uid://bemn2jfgdfhvc" path="res://scenes/minigames/pundong_1.tscn" id="8_kkjei"]
 [ext_resource type="Texture2D" uid="uid://ci1ofw2cm51pv" path="res://assets/sprites/minigames/minigame_stall/MEL'S.png" id="9_ac4gk"]
+[ext_resource type="Texture2D" uid="uid://gfq76gk3w7wp" path="res://assets/sprites/minigames/minigame_stall/patadyong.png" id="10_yuebw"]
 [ext_resource type="PackedScene" uid="uid://br7qkmw53wf1y" path="res://scenes/player/caleb.tscn" id="11_7f8j7"]
 [ext_resource type="PackedScene" uid="uid://gnoaor066jeq" path="res://scenes/npcs/vendor.tscn" id="12_7f8j7"]
 
@@ -37,7 +38,6 @@ stretch_mode = 6
 position = Vector2(960, 540)
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-visible = false
 position = Vector2(961, 543)
 scale = Vector2(1.15311, 1.16897)
 texture = ExtResource("1_gded3")
@@ -76,9 +76,6 @@ position = Vector2(872, 584)
 scale = Vector2(2.25, 2.25)
 interaction_enabled = false
 
-[node name="CharacterBody2D" parent="vendor" index="0"]
-texture_filter = 1
-
 [node name="Area2D" type="Area2D" parent="."]
 position = Vector2(888, 1136)
 scale = Vector2(2.25, 2.25)
@@ -114,34 +111,40 @@ position = Vector2(1278, 774)
 position = Vector2(960, 540)
 
 [node name="pundong" parent="." instance=ExtResource("7_j4okl")]
-position = Vector2(776, 272)
+position = Vector2(611, 768)
 scale = Vector2(2.25, 2.25)
 
 [node name="AnimatedSprite2D" parent="pundong" index="0"]
-position = Vector2(-7.33333, -7.33334)
-scale = Vector2(0.0857947, 0.0716146)
+position = Vector2(-11.5555, -17.332)
+scale = Vector2(0.135021, 0.119793)
 frame_progress = 0.0728521
 
 [node name="Sprite2D" parent="pundong" index="1"]
-position = Vector2(-7.11111, -10.6667)
-scale = Vector2(0.0320987, 0.0364197)
+position = Vector2(-12.4445, -23.1111)
+scale = Vector2(0.054321, 0.054321)
 
 [node name="Area2D" parent="pundong" index="2"]
 position = Vector2(-17.7778, -24.8889)
 
 [node name="CollisionShape2D" parent="pundong/Area2D" index="0"]
-position = Vector2(10.8889, 12.6667)
+position = Vector2(3.5556, 5.33331)
 
 [node name="pundong2" parent="." instance=ExtResource("7_j4okl")]
-position = Vector2(616, 800)
+position = Vector2(705, 696)
 scale = Vector2(2.25, 2.25)
 
 [node name="AnimatedSprite2D" parent="pundong2" index="0"]
+position = Vector2(20.889, 25.2258)
+scale = Vector2(0.143461, 0.110902)
 frame = 1
 frame_progress = 0.050845
 
+[node name="Sprite2D" parent="pundong2" index="1"]
+position = Vector2(21.8334, 19.0556)
+scale = Vector2(0.0578701, 0.0557098)
+
 [node name="CollisionShape2D" parent="pundong2/Area2D" index="0"]
-position = Vector2(-0.888885, 2.4444)
+position = Vector2(-26.6667, -22.2222)
 
 [node name="CanvasLayer" type="Node2D" parent="."]
 scale = Vector2(2.25, 2.25)
@@ -150,7 +153,8 @@ scale = Vector2(2.25, 2.25)
 position = Vector2(615.111, 245.333)
 
 [node name="AnimatedSprite2D" parent="CanvasLayer/pundong1" index="0"]
-position = Vector2(0.889008, 17.3337)
+position = Vector2(-2.08322, 14.2226)
+scale = Vector2(0.369807, 0.381944)
 frame_progress = 0.699152
 
 [node name="Sprite2D" parent="CanvasLayer/pundong1" index="1"]
@@ -162,6 +166,14 @@ position = Vector2(0, -3.55556)
 
 [node name="CollisionShape2D" parent="CanvasLayer/pundong1/Area2D" index="0"]
 position = Vector2(4, 10)
+
+[node name="patadyong" type="Node2D" parent="."]
+position = Vector2(667, 717)
+
+[node name="Sprite2D" type="Sprite2D" parent="patadyong"]
+position = Vector2(-1.52588e-05, -3.24249e-05)
+scale = Vector2(0.0553125, 0.0645)
+texture = ExtResource("10_yuebw")
 
 [editable path="vendor"]
 [editable path="stackedphotos/photos"]
