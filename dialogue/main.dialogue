@@ -1,25 +1,19 @@
-# To be added for the character intro at the start
-~ game_intro
-"Another day, another adventure."
-"Meet Caleb, a WVSU tech student struggling to keep up with the pressures of college life."
-"Between deadlines, exams, and endless responsibilities, he just wants a break."
-"But something doesn't feel right..."
-"It seems like there is more to see than meets the eye."
-"Welcome to Kalye Corazon."
-"Help Caleb dive into the heart of Western Visayas and uncover the stories and our culture hidden in plain sight."
+~ intro_bedroom
+Caleb: "My name is Caleb." 
+Caleb: "I'm a tech student at WVSU."
+Caleb: "I came here chasing the future I dreamed of."
 => END
 
-
 ~ hallway_thoughts
-Caleb: "Another project due, another exam to cram for."
-Caleb: "This hallway feels like a tunnel with no end."
-Caleb: "I just need... a break."
+Caleb: "Another deadline."
+Caleb: "Another day trying to catch up."
+Caleb: "I've walked through this hallway hundreds of times..."
+Caleb: "...but I've never really looked around."
 => END
 
 ~ faculty_dash_warning
 Caleb: "Professor?!"
 => END
-
 
 ~ cat_encounter
 Caleb: "What is this cat up to..."

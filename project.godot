@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Kalye Corazon"
-run/main_scene="uid://cpjti8u1xc103"
+run/main_scene="uid://bu01d18dvtufi"
 config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="res://icon.svg"
 
@@ -27,7 +27,7 @@ window/size/viewport_height=1080
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/ai_assistant_hub/plugin.cfg", "res://addons/dialogue_manager/plugin.cfg")
+enabled=PackedStringArray("res://addons/dialogue_manager/plugin.cfg")
 
 [input]
 

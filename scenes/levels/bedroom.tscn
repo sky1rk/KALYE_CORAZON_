@@ -1,0 +1,124 @@
+[gd_scene load_steps=7 format=3 uid="uid://cvgntnflvk268"]
+
+[ext_resource type="Script" uid="uid://tuyod3cllttr" path="res://scripts/levels/menu/bedroom.gd" id="1_h0whp"]
+[ext_resource type="Texture2D" uid="uid://0otp8hxqex30" path="res://assets/sprites/environment/intro/bedroom.jpg" id="2_fnl13"]
+
+[sub_resource type="Animation" id="Animation_fnl13"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Transition/TopPanel:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Transition/BottomPanel:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(960, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_h0whp"]
+resource_name = "intro_transition"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Transition/TopPanel:position")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(0, -540)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Transition/BottomPanel:position")
+tracks/1/interp = 2
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0, 540), Vector2(0, 1080)]
+}
+
+[sub_resource type="Animation" id="Animation_xeiqw"]
+resource_name = "outro_transition"
+length = 0.8
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Transition/TopPanel:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.8),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0, -540), Vector2(0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Transition/BottomPanel:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.8),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0, 1080), Vector2(0, 540)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_v7lbh"]
+_data = {
+&"RESET": SubResource("Animation_fnl13"),
+&"intro_transition": SubResource("Animation_h0whp"),
+&"outro_transition": SubResource("Animation_xeiqw")
+}
+
+[node name="bedroom" type="Node2D"]
+script = ExtResource("1_h0whp")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(952, 544)
+
+[node name="Background" type="Node2D" parent="."]
+
+[node name="Sprite2D" type="Sprite2D" parent="Background"]
+position = Vector2(1039.81, 542)
+scale = Vector2(1.4472, 1.47283)
+texture = ExtResource("2_fnl13")
+
+[node name="Transition" type="CanvasLayer" parent="."]
+
+[node name="TopPanel" type="ColorRect" parent="Transition"]
+offset_right = 1920.0
+offset_bottom = 540.0
+color = Color(0, 0, 0, 1)
+
+[node name="BottomPanel" type="ColorRect" parent="Transition"]
+offset_left = 960.0
+offset_right = 2880.0
+offset_bottom = 540.0
+color = Color(0, 0, 0, 1)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_v7lbh")
+}

@@ -1,0 +1,44 @@
+[gd_scene load_steps=5 format=3 uid="uid://bu01d18dvtufi"]
+
+[ext_resource type="Script" uid="uid://dxq46v0b0ln3h" path="res://scripts/levels/menu/intro.gd" id="1_gs2wg"]
+[ext_resource type="AudioStream" uid="uid://dcs8wylr2j8ua" path="res://assets/bgm/alarm-clock.mp3" id="2_6csdh"]
+[ext_resource type="FontFile" uid="uid://t5il60al4iak" path="res://assets/fonts/VT323-Regular.ttf" id="2_egpjd"]
+[ext_resource type="Texture2D" uid="uid://bk8x1o345oj7w" path="res://assets/sprites/environment/intro/blackscreen.jpg" id="2_ty81x"]
+
+[node name="intro" type="Node2D"]
+script = ExtResource("1_gs2wg")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(960, 536)
+texture = ExtResource("2_ty81x")
+
+[node name="BlackOverlay" type="ColorRect" parent="."]
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
+[node name="IntroText" type="Label" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 728.0
+offset_top = 504.0
+offset_right = 1208.0
+offset_bottom = 562.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("2_egpjd")
+theme_override_font_sizes/font_size = 42
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+
+[node name="AlarmSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("2_6csdh")
+
+[node name="TextTimer" type="Timer" parent="."]
+wait_time = 2.0
+one_shot = true

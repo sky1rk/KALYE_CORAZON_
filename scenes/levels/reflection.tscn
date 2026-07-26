@@ -1,0 +1,43 @@
+[gd_scene load_steps=5 format=3 uid="uid://xbw4ocfnplnq"]
+
+[ext_resource type="Script" uid="uid://b87ndbdlq4nep" path="res://scripts/levels/menu/reflection.gd" id="1_7xg8f"]
+[ext_resource type="Texture2D" uid="uid://bk8x1o345oj7w" path="res://assets/sprites/environment/intro/blackscreen.jpg" id="2_5bdj7"]
+[ext_resource type="FontFile" uid="uid://t5il60al4iak" path="res://assets/fonts/VT323-Regular.ttf" id="3_b2b5y"]
+[ext_resource type="AudioStream" uid="uid://es1cj6uwut3q" path="res://assets/bgm/door-close.mp3" id="4_7xg8f"]
+
+[node name="reflection" type="Node2D"]
+script = ExtResource("1_7xg8f")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(960, 536)
+texture = ExtResource("2_5bdj7")
+
+[node name="BlackOverlay" type="ColorRect" parent="."]
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
+[node name="ReflectionText" type="Label" parent="."]
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_top = 504.0
+offset_right = 1920.0
+offset_bottom = 562.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("3_b2b5y")
+theme_override_font_sizes/font_size = 42
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+
+[node name="DoorClose" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("4_7xg8f")
+
+[node name="TextTimer" type="Timer" parent="."]
+wait_time = 2.0
+one_shot = true
