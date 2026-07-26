@@ -17,18 +17,33 @@ size = Vector2(392, 120)
 size = Vector2(973, 125)
 
 [node name="table" type="Node2D"]
+position = Vector2(5, 0)
 script = ExtResource("1_ne6wf")
+
+[node name="BackgroundLayer" type="CanvasLayer" parent="."]
+layer = -10
+
+[node name="TextureRect" type="TextureRect" parent="BackgroundLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_gded3")
+expand_mode = 1
+stretch_mode = 6
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(960, 540)
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+visible = false
 position = Vector2(961, 543)
 scale = Vector2(1.15311, 1.16897)
 texture = ExtResource("1_gded3")
 
 [node name="Table" type="Node2D" parent="."]
-position = Vector2(-24, -72)
+position = Vector2(-27, -75)
 scale = Vector2(2.25, 2.25)
 
 [node name="Sprite2D" type="Sprite2D" parent="Table"]
@@ -102,19 +117,31 @@ position = Vector2(960, 540)
 position = Vector2(776, 272)
 scale = Vector2(2.25, 2.25)
 
-[node name="Sprite2D" parent="pundong" index="0"]
+[node name="AnimatedSprite2D" parent="pundong" index="0"]
+position = Vector2(-7.33333, -7.33334)
+scale = Vector2(0.0857947, 0.0716146)
+frame_progress = 0.0728521
+
+[node name="Sprite2D" parent="pundong" index="1"]
 position = Vector2(-7.11111, -10.6667)
 scale = Vector2(0.0320987, 0.0364197)
 
-[node name="Area2D" parent="pundong" index="1"]
+[node name="Area2D" parent="pundong" index="2"]
 position = Vector2(-17.7778, -24.8889)
 
 [node name="CollisionShape2D" parent="pundong/Area2D" index="0"]
-position = Vector2(10.6667, 14.2222)
+position = Vector2(10.8889, 12.6667)
 
 [node name="pundong2" parent="." instance=ExtResource("7_j4okl")]
 position = Vector2(616, 800)
 scale = Vector2(2.25, 2.25)
+
+[node name="AnimatedSprite2D" parent="pundong2" index="0"]
+frame = 1
+frame_progress = 0.050845
+
+[node name="CollisionShape2D" parent="pundong2/Area2D" index="0"]
+position = Vector2(-0.888885, 2.4444)
 
 [node name="CanvasLayer" type="Node2D" parent="."]
 scale = Vector2(2.25, 2.25)
@@ -122,11 +149,15 @@ scale = Vector2(2.25, 2.25)
 [node name="pundong1" parent="CanvasLayer" instance=ExtResource("8_kkjei")]
 position = Vector2(615.111, 245.333)
 
-[node name="Sprite2D" parent="CanvasLayer/pundong1" index="0"]
+[node name="AnimatedSprite2D" parent="CanvasLayer/pundong1" index="0"]
+position = Vector2(0.889008, 17.3337)
+frame_progress = 0.699152
+
+[node name="Sprite2D" parent="CanvasLayer/pundong1" index="1"]
 position = Vector2(0, 7.11111)
 scale = Vector2(0.120833, 0.130555)
 
-[node name="Area2D" parent="CanvasLayer/pundong1" index="1"]
+[node name="Area2D" parent="CanvasLayer/pundong1" index="2"]
 position = Vector2(0, -3.55556)
 
 [node name="CollisionShape2D" parent="CanvasLayer/pundong1/Area2D" index="0"]
@@ -135,4 +166,5 @@ position = Vector2(4, 10)
 [editable path="vendor"]
 [editable path="stackedphotos/photos"]
 [editable path="pundong"]
+[editable path="pundong2"]
 [editable path="CanvasLayer/pundong1"]

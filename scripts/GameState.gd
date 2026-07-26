@@ -3,6 +3,8 @@ extends Node
 
 const CULTURAL_ECHO_BGM_PATH := "res://assets/bgm/cultural-echo-bgm.mp3"
 const CULTURAL_ECHO_FADE_DURATION := 2.0
+const CULTURAL_ECHO_VOLUME_DB := 0.0
+const CULTURAL_ECHO_START_OFFSET_SECONDS := 20.0
 
 var player_return_position: Variant = null
 
@@ -54,7 +56,7 @@ func _prepare_cultural_echo_player() -> void:
 	cultural_echo_player = AudioStreamPlayer.new()
 	cultural_echo_player.name = "CulturalEchoPlayer"
 	cultural_echo_player.stream = _load_cultural_echo_stream()
-	cultural_echo_player.volume_db = -2.0
+	cultural_echo_player.volume_db = CULTURAL_ECHO_VOLUME_DB
 	add_child(cultural_echo_player)
 
 
@@ -74,12 +76,12 @@ func start_cultural_echo_bgm() -> void:
 
 	cultural_echo_dialogue_fade_started = false
 
-	cultural_echo_player.volume_db = -2.0
+	cultural_echo_player.volume_db = CULTURAL_ECHO_VOLUME_DB
 
 	if cultural_echo_player.playing:
 		return
 
-	cultural_echo_player.play()
+	cultural_echo_player.play(CULTURAL_ECHO_START_OFFSET_SECONDS)
 
 
 func stop_cultural_echo_bgm() -> void:
@@ -92,7 +94,7 @@ func stop_cultural_echo_bgm() -> void:
 		cultural_echo_player.stop()
 
 	if cultural_echo_player:
-		cultural_echo_player.volume_db = -2.0
+		cultural_echo_player.volume_db = CULTURAL_ECHO_VOLUME_DB
 
 
 func begin_cultural_echo_dialogue_fade() -> void:
@@ -138,6 +140,11 @@ func mark_dialogue_as_triggered(unique_trigger_id: String):
 	if not triggered_dialogues.has(unique_trigger_id):
 		triggered_dialogues[unique_trigger_id] = true
 		print("Dialogue trigger marked as triggered: ", unique_trigger_id)
+
+
+func clear_dialogue_trigger(unique_trigger_id: String) -> void:
+	if triggered_dialogues.has(unique_trigger_id):
+		triggered_dialogues.erase(unique_trigger_id)
 
 # Checks if a dialogue trigger has already been activated.
 func is_dialogue_triggered(unique_trigger_id: String) -> bool:

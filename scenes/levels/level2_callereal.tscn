@@ -233,7 +233,7 @@ freeze_player = false
 required_entry_direction = 2
 
 [node name="DialogueTrigger2" parent="0" instance=ExtResource("8_qo4vo")]
-position = Vector2(7, 616)
+position = Vector2(-300, 616)
 dialogue_resource = ExtResource("9_qo4vo")
 dialogue_title = "puzzle_intro"
 unique_trigger_id = "puzzle_intro_table"
@@ -257,8 +257,16 @@ texture = ExtResource("10_f4ujc")
 [node name="vendor" parent="0" instance=ExtResource("11_b2g8j")]
 position = Vector2(-143, 620)
 
+[node name="CharacterBody2D" parent="0/vendor" index="0"]
+texture_filter = 1
+
 [node name="pundong1" parent="0" instance=ExtResource("12_2ntxm")]
 position = Vector2(38, 566)
+
+[node name="AnimatedSprite2D" parent="0/pundong1" index="0"]
+position = Vector2(50.5, 55.75)
+scale = Vector2(0.386957, 0.421387)
+frame_progress = 0.864284
 
 [node name="pundong" parent="0" instance=ExtResource("13_868re")]
 position = Vector2(-422, 720)
@@ -443,7 +451,7 @@ stream = ExtResource("18_c4jp8")
 autoplay = true
 
 [node name="MinigameTrigger" type="Area2D" parent="."]
-position = Vector2(-474, 668)
+position = Vector2(-1124, 668)
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="MinigameTrigger"]
@@ -461,3 +469,4 @@ shape = SubResource("RectangleShape2D_qo4vo")
 [connection signal="body_exited" from="0/TransitionZones/UFLeft" to="0/TransitionZones/UFLeft" method="_on_body_exited"]
 
 [editable path="0/vendor"]
+[editable path="0/pundong1"]

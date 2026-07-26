@@ -1,13 +1,42 @@
-[gd_scene load_steps=4 format=3 uid="uid://bemn2jfgdfhvc"]
+[gd_scene load_steps=8 format=3 uid="uid://bemn2jfgdfhvc"]
 
 [ext_resource type="Script" uid="uid://din2715nhkkuv" path="res://scripts/minigames/pundong.gd" id="1_p28e1"]
 [ext_resource type="Texture2D" uid="uid://c8uegs3frdpta" path="res://assets/sprites/minigames/minigame_stall/pundong.png" id="2_3eyiq"]
+[ext_resource type="Texture2D" path="res://assets/sprites/minigames/minigame_stall/pundong-glow - Copy (2).png" id="2_ni344"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lah6h"]
+atlas = ExtResource("2_ni344")
+region = Rect2(690, 0, 230, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ulc48"]
+atlas = ExtResource("2_ni344")
+region = Rect2(920, 0, 230, 1024)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ad0wx"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lah6h")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ulc48")
+}],
+"loop": true,
+"name": &"default",
+"speed": 4.0
+}]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_lj2et"]
 size = Vector2(104, 88)
 
 [node name="pundong1" type="Node2D"]
 script = ExtResource("1_p28e1")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(49, 56)
+scale = Vector2(0.365217, 0.420898)
+sprite_frames = SubResource("SpriteFrames_ad0wx")
+frame_progress = 0.238619
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 position = Vector2(48.5, 47.5)

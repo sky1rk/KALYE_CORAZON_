@@ -299,6 +299,7 @@ required_entry_direction = 1
 position = Vector2(-1335, -179)
 
 [node name="CharacterBody2D" parent="0/Faculty" index="0"]
+texture_filter = 1
 position = Vector2(5.37503, -6.375)
 scale = Vector2(2.24219, 2.24219)
 animation = &"walking"

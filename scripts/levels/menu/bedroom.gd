@@ -1,17 +1,20 @@
 extends Node2D
 
+@onready var balloon = preload("res://dialogue/balloon.tscn").instantiate()
 @onready var animation_player = $AnimationPlayer
+var dialogue_res = preload("res://dialogue/main.dialogue")
 
 func _ready() -> void:
+	add_child(balloon)
+	balloon.hide()
+
 	# Play the opening transition
 	animation_player.play("intro_transition")
 	await animation_player.animation_finished
 
 	# Start the bedroom dialogue
-	DialogueManager.show_dialogue_balloon(
-		preload("res://dialogue/main.dialogue"),
-		"intro_bedroom"
-	)
+	balloon.show()
+	balloon.start(dialogue_res, "intro_bedroom")
 
 	# Wait for the dialogue to finish
 	await DialogueManager.dialogue_ended

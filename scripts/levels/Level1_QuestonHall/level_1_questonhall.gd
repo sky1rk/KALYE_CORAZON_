@@ -83,9 +83,6 @@ func _ready():
 	if faculty and faculty.has_method("set_presence_enabled"):
 		var should_show_faculty := hallway_thoughts_done and not GameState.get_story_flag("office_faculty_leave_completed")
 		faculty.set_presence_enabled(should_show_faculty)
-	# Start hallway thoughts once Caleb has spawned and camera has centered.
-	if not hallway_thoughts_done:
-		call_deferred("_start_hallway_thoughts_when_centered")
 	
 	var story_exit = $"0/LevelExitTrigger"
 	story_exit.monitoring = false
@@ -188,17 +185,12 @@ func _on_dialogue_mutated(data: Dictionary):
 		$"0/LevelExitTrigger".monitoring = true
 
 
-func _start_hallway_thoughts_when_centered() -> void:
+func _start_hallway_thoughts() -> void:
 	# Prevent replay if this scene has already started the hallway opening dialogue.
 	if hallway_thoughts_started:
 		return
 	if GameState.is_dialogue_triggered("hallway_thoughts"):
 		return
-
-	var camera = player.get_node_or_null("Camera2D")
-	if camera:
-		# Wait until camera finishes smoothing and centers on Caleb.
-		await _wait_for_camera_center(camera)
 
 	hallway_thoughts_started = true
 	hallway_faculty_spawn_pending = true
@@ -207,13 +199,10 @@ func _start_hallway_thoughts_when_centered() -> void:
 	balloon.start(dialogue_res, "hallway_thoughts")
 
 
-func _wait_for_camera_center(camera: Camera2D) -> void:
-	# Compare current camera center to Caleb-centered target and wait until close.
-	var target_center = player.global_position + camera.position
-	for _i in range(30):
-		if camera.get_screen_center_position().distance_to(target_center) <= 1.0:
-			return
-		await get_tree().process_frame
+func start_opening_dialogue() -> void:
+	if GameState.is_dialogue_triggered("hallway_thoughts"):
+		return
+	_start_hallway_thoughts()
 
 
 func _on_dialogue_ended(_resource: DialogueResource) -> void:

@@ -17,7 +17,10 @@ var returning_to_calle_real: bool = false
 
 
 func _ready() -> void:
-	if bgm:
+	if GameState.level1_cultural_echo_active:
+		if bgm:
+			bgm.stop()
+	elif bgm:
 		bgm.volume_db = -40
 		bgm.play()
 		var tween := create_tween()

@@ -10,6 +10,7 @@ const TABLE_PUZZLE_STARTED_FLAG := "table_puzzle_started"
 const TABLE_PUZZLE_FINISHED_FLAG := "table_puzzle_finished"
 const LEVEL2_PUNDONG_REWARD_COLLECTED_FLAG := "level2_pundong_reward_collected"
 const PUZZLE_INTRO_TRIGGER_ID := "puzzle_intro_table"
+const STACKED_PHOTOS_DIALOGUE_DISTANCE := 240.0
 const ARTIFACT_2_SCENE := preload("res://scenes/minigames/artifact_2.tscn")
 const CONGRATS_SCENE := preload("res://scenes/minigames/congrats.tscn")
 const POPUP_OPEN_DURATION := 0.18
@@ -39,12 +40,18 @@ var vendor_interaction_active := false
 var vendor_interaction_pending := false
 var vendor_choice_open := false
 var visible_pundong: Node2D = null
+var hovered_pundong: Node2D = null
 var pundong_base_scales: Dictionary = {}
 var pundong_tween: Tween = null
 var active_artifact_2: Node2D = null
 var active_congrats: Node2D = null
 var active_reward_backdrop: ColorRect = null
 var reward_popup_layer: CanvasLayer = null
+var stacked_photos_hovered := false
+var stacked_photos_dialogue_active := false
+var stacked_photos_near_player := false
+var vendor_intro_active := false
+var vendor_intro_finished := false
 
 
 func _ready() -> void:
@@ -53,6 +60,7 @@ func _ready() -> void:
 
 	if scene_camera:
 		scene_camera.enabled = true
+		scene_camera.make_current()
 		scene_camera.zoom = Vector2.ONE
 		scene_camera.global_position = Vector2(960, 540)
 
@@ -61,14 +69,20 @@ func _ready() -> void:
 	_connect_dialogue_mutations()
 	_update_pundong_visibility()
 	_setup_pundong_interactions()
+	_play_pundong_animations()
 	_place_player_after_table_puzzle()
 
 	add_child(balloon)
 	if not GameState.get_story_flag(TABLE_PUZZLE_STARTED_FLAG):
 		call_deferred("_start_vendor_intro_dialogue")
+	else:
+		vendor_intro_finished = true
 
 
 func _exit_tree() -> void:
+	if not opening_puzzle and not active_congrats:
+		_stop_stacked_photos_cultural_echo_if_waiting()
+
 	if DialogueManager.mutated.is_connected(_on_dialogue_mutated):
 		DialogueManager.mutated.disconnect(_on_dialogue_mutated)
 	if DialogueManager.dialogue_ended.is_connected(_on_dialogue_ended):
@@ -78,6 +92,8 @@ func _exit_tree() -> void:
 
 
 func _start_vendor_intro_dialogue() -> void:
+	vendor_intro_active = true
+	vendor_intro_finished = false
 	vendor_interaction_active = false
 	vendor_interaction_pending = false
 	vendor_choice_open = false
@@ -105,6 +121,10 @@ func _on_dialogue_mutated(data: Dictionary) -> void:
 
 
 func _process(_delta: float) -> void:
+	_update_pundong_hover()
+	_update_stacked_photos_hover()
+	_update_stacked_photos_proximity()
+
 	if not vendor_interaction_active or vendor_choice_open or not vendor_area:
 		return
 
@@ -140,16 +160,11 @@ func _setup_stacked_photos_interaction() -> void:
 
 
 func _on_stacked_photos_mouse_entered() -> void:
-	if opening_puzzle or GameState.puzzle_minigame_completed:
-		return
-
-	Input.set_default_cursor_shape(Input.CURSOR_POINTING_HAND)
-	_tween_stacked_photos_scale(stacked_photos_sprite_base_scale * 1.015)
+	_set_stacked_photos_hovered(true)
 
 
 func _on_stacked_photos_mouse_exited() -> void:
-	Input.set_default_cursor_shape(Input.CURSOR_ARROW)
-	_tween_stacked_photos_scale(stacked_photos_sprite_base_scale)
+	_set_stacked_photos_hovered(false)
 
 
 func _on_stacked_photos_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
@@ -167,6 +182,8 @@ func _open_puzzle_minigame() -> void:
 	Input.set_default_cursor_shape(Input.CURSOR_ARROW)
 	get_viewport().set_input_as_handled()
 	GameState.set_story_flag(TABLE_PUZZLE_STARTED_FLAG, true)
+	GameState.level1_cultural_echo_active = true
+	GameState.start_cultural_echo_bgm()
 	GameState.puzzle_minigame_completed = true
 	GameState.puzzle_minigame_return_scene = TABLE_SCENE_PATH
 	GameState.player_return_position = null
@@ -197,7 +214,9 @@ func _update_pundong_visibility() -> void:
 	if not GameState.get_story_flag(TABLE_PUZZLE_FINISHED_FLAG) or pundong_nodes.is_empty():
 		return
 
-	var random_index := randi_range(0, pundong_nodes.size() - 1)
+	var rng := RandomNumberGenerator.new()
+	rng.randomize()
+	var random_index := rng.randi_range(0, pundong_nodes.size() - 1)
 	visible_pundong = pundong_nodes[random_index]
 	visible_pundong.show()
 
@@ -219,9 +238,16 @@ func _setup_pundong_interactions() -> void:
 		if not area.mouse_exited.is_connected(exited_callable):
 			area.mouse_exited.connect(exited_callable)
 
-		var sprite := pundong_node.get_node_or_null("Sprite2D") as Sprite2D
-		if sprite:
-			pundong_base_scales[pundong_node] = sprite.scale
+		pundong_base_scales[pundong_node] = pundong_node.scale
+
+
+func _play_pundong_animations() -> void:
+	for pundong_node in _get_pundong_nodes():
+		var animated_sprite := pundong_node.get_node_or_null("AnimatedSprite2D") as AnimatedSprite2D
+		if animated_sprite:
+			animated_sprite.visible = true
+			animated_sprite.z_index = 1
+			animated_sprite.play()
 
 
 func _on_pundong_input_event(_viewport: Node, event: InputEvent, _shape_idx: int, pundong_node: Node2D) -> void:
@@ -234,16 +260,12 @@ func _on_pundong_input_event(_viewport: Node, event: InputEvent, _shape_idx: int
 
 
 func _on_pundong_mouse_entered(pundong_node: Node2D) -> void:
-	if not pundong_node.visible or active_artifact_2 or active_congrats:
-		return
-
-	Input.set_default_cursor_shape(Input.CURSOR_POINTING_HAND)
-	_tween_pundong_scale(pundong_node, 1.035)
+	_set_hovered_pundong(pundong_node)
 
 
 func _on_pundong_mouse_exited(pundong_node: Node2D) -> void:
-	Input.set_default_cursor_shape(Input.CURSOR_ARROW)
-	_tween_pundong_scale(pundong_node, 1.0)
+	if hovered_pundong == pundong_node:
+		_set_hovered_pundong(null)
 
 
 func _open_pundong_reward(pundong_node: Node2D) -> void:
@@ -319,6 +341,8 @@ func _on_congrats_closed() -> void:
 	GameState.set_story_flag(LEVEL2_PUNDONG_REWARD_COLLECTED_FLAG, true)
 	_mark_puzzle_intro_trigger_handled()
 	GameState.player_return_position = CALLE_REAL_TABLE_FRONT_POSITION
+	GameState.level1_cultural_echo_active = false
+	GameState.stop_cultural_echo_bgm()
 	active_congrats = null
 	_restore_player_input_after_reward_popups()
 
@@ -402,7 +426,10 @@ func _return_to_calle_real() -> void:
 
 	returning_to_calle_real = true
 	Input.set_default_cursor_shape(Input.CURSOR_ARROW)
-	_mark_puzzle_intro_trigger_handled()
+	if GameState.get_story_flag(TABLE_PUZZLE_STARTED_FLAG) or GameState.get_story_flag(TABLE_PUZZLE_FINISHED_FLAG):
+		_mark_puzzle_intro_trigger_handled()
+	else:
+		GameState.clear_dialogue_trigger(PUZZLE_INTRO_TRIGGER_ID)
 	GameState.player_return_position = CALLE_REAL_TABLE_RETURN_POSITION
 	get_tree().change_scene_to_file(CALLE_REAL_SCENE_PATH)
 
@@ -424,6 +451,10 @@ func _return_to_calle_real_when_dialogue_ends() -> void:
 
 
 func _on_dialogue_ended(_resource: DialogueResource) -> void:
+	if vendor_intro_active:
+		vendor_intro_active = false
+		vendor_intro_finished = true
+
 	if return_to_calle_real_after_dialogue:
 		return
 
@@ -519,19 +550,106 @@ func _tween_stacked_photos_scale(target_scale: Vector2) -> void:
 		.set_ease(Tween.EASE_OUT)
 
 
-func _tween_pundong_scale(pundong_node: Node2D, scale_multiplier: float) -> void:
-	var sprite := pundong_node.get_node_or_null("Sprite2D") as Sprite2D
-	if not sprite:
+func _update_stacked_photos_hover() -> void:
+	_set_stacked_photos_hovered(not opening_puzzle and not GameState.puzzle_minigame_completed and _is_mouse_over_stacked_photos())
+
+
+func _set_stacked_photos_hovered(should_hover: bool) -> void:
+	if should_hover and (opening_puzzle or GameState.puzzle_minigame_completed):
+		should_hover = false
+
+	if stacked_photos_hovered == should_hover:
 		return
 
+	stacked_photos_hovered = should_hover
+	if stacked_photos_hovered:
+		Input.set_default_cursor_shape(Input.CURSOR_POINTING_HAND)
+		_tween_stacked_photos_scale(stacked_photos_sprite_base_scale * 1.08)
+	else:
+		if not hovered_pundong:
+			Input.set_default_cursor_shape(Input.CURSOR_ARROW)
+		_tween_stacked_photos_scale(stacked_photos_sprite_base_scale)
+
+
+func _update_stacked_photos_proximity() -> void:
+	if not player or opening_puzzle or GameState.puzzle_minigame_completed:
+		return
+	if GameState.get_story_flag(TABLE_PUZZLE_STARTED_FLAG):
+		return
+	if not vendor_intro_finished:
+		return
+
+	var is_near := player.global_position.distance_to(stacked_photos.global_position) <= STACKED_PHOTOS_DIALOGUE_DISTANCE
+	if stacked_photos_near_player != is_near:
+		stacked_photos_near_player = is_near
+		if not stacked_photos_near_player:
+			_stop_stacked_photos_cultural_echo_if_waiting()
+			return
+
+	if not stacked_photos_near_player:
+		return
+	if balloon.visible:
+		return
+
+	_start_stacked_photos_dialogue()
+
+
+func _start_stacked_photos_dialogue() -> void:
+	if stacked_photos_dialogue_active:
+		return
+
+	stacked_photos_dialogue_active = true
+	GameState.level1_cultural_echo_active = true
+	GameState.start_cultural_echo_bgm()
+	balloon.show()
+	balloon.start(dialogue_res, "puzzle_table_intro")
+
+
+func _stop_stacked_photos_cultural_echo_if_waiting() -> void:
+	if GameState.get_story_flag(TABLE_PUZZLE_STARTED_FLAG):
+		return
+
+	stacked_photos_dialogue_active = false
+	GameState.level1_cultural_echo_active = false
+	GameState.stop_cultural_echo_bgm()
+
+
+func _tween_pundong_scale(pundong_node: Node2D, scale_multiplier: float) -> void:
 	if pundong_tween and pundong_tween.is_valid():
 		pundong_tween.kill()
 
-	var base_scale: Vector2 = pundong_base_scales.get(pundong_node, sprite.scale)
+	var base_scale: Vector2 = pundong_base_scales.get(pundong_node, pundong_node.scale)
 	pundong_tween = create_tween()
-	pundong_tween.tween_property(sprite, "scale", base_scale * scale_multiplier, 0.16)\
+	pundong_tween.tween_property(pundong_node, "scale", base_scale * scale_multiplier, 0.16)\
 		.set_trans(Tween.TRANS_SINE)\
 		.set_ease(Tween.EASE_OUT)
+
+
+func _update_pundong_hover() -> void:
+	if active_artifact_2 or active_congrats:
+		_set_hovered_pundong(null)
+		return
+
+	_set_hovered_pundong(_get_visible_pundong_at_mouse())
+
+
+func _set_hovered_pundong(pundong_node: Node2D) -> void:
+	if pundong_node and not pundong_node.visible:
+		pundong_node = null
+
+	if hovered_pundong == pundong_node:
+		return
+
+	if hovered_pundong and is_instance_valid(hovered_pundong):
+		_tween_pundong_scale(hovered_pundong, 1.0)
+
+	hovered_pundong = pundong_node
+
+	if hovered_pundong:
+		Input.set_default_cursor_shape(Input.CURSOR_POINTING_HAND)
+		_tween_pundong_scale(hovered_pundong, 1.08)
+	else:
+		Input.set_default_cursor_shape(Input.CURSOR_ARROW)
 
 
 func _is_left_click(event: InputEvent) -> bool:
@@ -567,7 +685,7 @@ func _get_visible_pundong_at_mouse() -> Node2D:
 			continue
 
 		var local_mouse_position := area.to_local(get_global_mouse_position()) - collision.position
-		var half_size := rectangle_shape.size * 0.5
+		var half_size := rectangle_shape.size * 0.75
 		if abs(local_mouse_position.x) <= half_size.x and abs(local_mouse_position.y) <= half_size.y:
 			return pundong_node
 

@@ -1,6 +1,7 @@
 extends Control
 
 @export var scene1: PackedScene
+var scene1_instance: Node = null
 @onready var logo = $CanvasLayer/TextureRect
 var bobble_tween: Tween
 var fade_tween: Tween
@@ -8,9 +9,9 @@ var is_fading := false
 
 func _ready():
 	if scene1:
-		var s1 = scene1.instantiate()
-		add_child(s1)
-		move_child(s1, 0)  # background at index 0
+		scene1_instance = scene1.instantiate()
+		add_child(scene1_instance)
+		move_child(scene1_instance, 0)  # background at index 0
 	$CanvasLayer.layer = 100  # ensure logo is always in front
 
 	_start_bobble()
@@ -42,3 +43,5 @@ func _start_fade_out():
 
 func _on_fade_done():
 	logo.visible = false
+	if scene1_instance and scene1_instance.has_method("start_opening_dialogue"):
+		scene1_instance.start_opening_dialogue()

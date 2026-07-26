@@ -28,19 +28,19 @@ Caleb: "What is this cat up to..."
 => END
 
 ~ faculty_intro
-Faculty: Caleb, you're just in time.
-Faculty: I need help sorting these books before class.
+Faculty: "Caleb, you're just in time."
+Faculty: "I need help sorting these books before class."
 - Offer to help.
 	do DialogueManager.mutated.emit({"mutation": "help_faculty"})
-	Caleb: Of course, Professor. I can help.
-	Faculty: Thank you. Follow me.
+	Caleb: "Of course, Professor. I can help."
+	Faculty: "Thank you. Follow me."
 - Say you're busy.
-	Caleb: Sorry, Professor. I can't help right now.
-	Faculty: That's alright. Be careful in the hallway.
+	Caleb: "Sorry, Professor. I can't help right now."
+	Faculty: "That's alright. Be careful in the hallway."
 => END
 
 ~ faculty_escort_pause
-Faculty: Just put those books on the table.
+Faculty: "Just put those books on the table."
 do DialogueManager.mutated.emit({"mutation": "faculty_cultural_echo_start"})
 do wait(5)
 do DialogueManager.mutated.emit({"mutation": "faculty_pause_sound_stop"})
@@ -148,6 +148,13 @@ Caleb: "One of them is torn apart."
 Caleb: "Wait, that sound . . why is it getting stronger . ."
 do DialogueManager.mutated.emit({"mutation": "start_minigame"})
 => END
+
+~ puzzle_table_intro
+Caleb: "One of these photos is torn apart."
+Caleb: "Wait, that sound is getting stronger . ."
+do DialogueManager.mutated.emit({"mutation": "start_minigame"})
+=> END!
+
 
 ~ calle_real_vendor_intro
 Vendor: "Welcome to Calle Real."

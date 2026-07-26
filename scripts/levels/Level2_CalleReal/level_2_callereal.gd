@@ -22,6 +22,7 @@ var fade_time := 2.0  # seconds for fade-in/out
 var player_instance: CharacterBody2D = null
 var cat_instance: CharacterBody2D = null
 var visible_pundong: Node2D = null
+var hovered_pundong: Node2D = null
 var pundong_base_scales: Dictionary = {}
 var pundong_tween: Tween = null
 var active_artifact_2: Node2D = null
@@ -34,8 +35,11 @@ var dialogue_res = preload("res://dialogue/main.dialogue")
 
 func _ready():
 	print("DEBUG: Entered Level 2 (Calle Real)!")
-	GameState.level1_cultural_echo_active = false
-	GameState.stop_cultural_echo_bgm()
+	var returning_from_puzzle_minigame := GameState.level1_cultural_echo_active and GameState.puzzle_minigame_completed and GameState.puzzle_minigame_return_scene == CALLE_REAL_SCENE_PATH
+	var keep_cultural_echo_playing := GameState.level1_cultural_echo_active and GameState.puzzle_minigame_completed and GameState.puzzle_minigame_return_scene == CALLE_REAL_SCENE_PATH
+	if not keep_cultural_echo_playing:
+		GameState.level1_cultural_echo_active = false
+		GameState.stop_cultural_echo_bgm()
 	
 	# --- LOAD SCENES IF NOT ASSIGNED IN INSPECTOR ---
 	if player_scene == null:
@@ -62,6 +66,9 @@ func _ready():
 	else:
 		player_instance.global_position = Vector2(1394, 683)
 		player_instance.set_input_enabled(true)
+
+	if returning_from_puzzle_minigame and bgm:
+		bgm.stop()
 	
 	# --- CAT SPAWNING LOGIC ---
 	if GameState.cat_is_following_globally:
@@ -95,9 +102,10 @@ func _ready():
 	_setup_minigame_trigger()
 	_update_pundong_visibility()
 	_setup_pundong_interactions()
+	_play_pundong_animations()
 	
 	# --- BGM Fade In ---
-	if bgm:
+	if bgm and not returning_from_puzzle_minigame:
 		bgm.volume_db = -40  # Start nearly silent
 		bgm.play()
 		var t = create_tween()
@@ -140,6 +148,10 @@ func _input(event: InputEvent) -> void:
 	var clicked_pundong := _get_visible_pundong_at_mouse()
 	if clicked_pundong:
 		_open_pundong_reward(clicked_pundong)
+
+
+func _process(_delta: float) -> void:
+	_update_pundong_hover()
 
 
 func _setup_minigame_trigger() -> void:
@@ -193,7 +205,9 @@ func _update_pundong_visibility() -> void:
 	if not GameState.puzzle_minigame_completed or pundong_nodes.is_empty():
 		return
 
-	var random_index := randi_range(0, pundong_nodes.size() - 1)
+	var rng := RandomNumberGenerator.new()
+	rng.randomize()
+	var random_index := rng.randi_range(0, pundong_nodes.size() - 1)
 	visible_pundong = pundong_nodes[random_index]
 	visible_pundong.show()
 
@@ -215,9 +229,16 @@ func _setup_pundong_interactions() -> void:
 		if not area.mouse_exited.is_connected(exited_callable):
 			area.mouse_exited.connect(exited_callable)
 
-		var sprite := pundong_node.get_node_or_null("Sprite2D") as Sprite2D
-		if sprite:
-			pundong_base_scales[pundong_node] = sprite.scale
+		pundong_base_scales[pundong_node] = pundong_node.scale
+
+
+func _play_pundong_animations() -> void:
+	for pundong_node in _get_pundong_nodes():
+		var animated_sprite := pundong_node.get_node_or_null("AnimatedSprite2D") as AnimatedSprite2D
+		if animated_sprite:
+			animated_sprite.visible = true
+			animated_sprite.z_index = 1
+			animated_sprite.play()
 
 
 func _on_pundong_input_event(_viewport: Node, event: InputEvent, _shape_idx: int, pundong_node: Node2D) -> void:
@@ -230,16 +251,12 @@ func _on_pundong_input_event(_viewport: Node, event: InputEvent, _shape_idx: int
 
 
 func _on_pundong_mouse_entered(pundong_node: Node2D) -> void:
-	if not pundong_node.visible or active_artifact_2 or active_congrats:
-		return
-
-	Input.set_default_cursor_shape(Input.CURSOR_POINTING_HAND)
-	_tween_pundong_scale(pundong_node, 1.035)
+	_set_hovered_pundong(pundong_node)
 
 
 func _on_pundong_mouse_exited(pundong_node: Node2D) -> void:
-	Input.set_default_cursor_shape(Input.CURSOR_ARROW)
-	_tween_pundong_scale(pundong_node, 1.0)
+	if hovered_pundong == pundong_node:
+		_set_hovered_pundong(null)
 
 
 func _open_pundong_reward(pundong_node: Node2D) -> void:
@@ -278,7 +295,7 @@ func _get_visible_pundong_at_mouse() -> Node2D:
 			continue
 
 		var local_mouse_position := area.to_local(get_global_mouse_position()) - collision.position
-		var half_size := rectangle_shape.size * 0.5
+		var half_size := rectangle_shape.size * 0.75
 		if abs(local_mouse_position.x) <= half_size.x and abs(local_mouse_position.y) <= half_size.y:
 			return pundong_node
 
@@ -363,18 +380,41 @@ func _play_popup_open_transition(popup: Node2D) -> void:
 
 
 func _tween_pundong_scale(pundong_node: Node2D, scale_multiplier: float) -> void:
-	var sprite := pundong_node.get_node_or_null("Sprite2D") as Sprite2D
-	if not sprite:
-		return
-
 	if pundong_tween and pundong_tween.is_valid():
 		pundong_tween.kill()
 
-	var base_scale: Vector2 = pundong_base_scales.get(pundong_node, sprite.scale)
+	var base_scale: Vector2 = pundong_base_scales.get(pundong_node, pundong_node.scale)
 	pundong_tween = create_tween()
-	pundong_tween.tween_property(sprite, "scale", base_scale * scale_multiplier, 0.16)\
+	pundong_tween.tween_property(pundong_node, "scale", base_scale * scale_multiplier, 0.16)\
 		.set_trans(Tween.TRANS_SINE)\
 		.set_ease(Tween.EASE_OUT)
+
+
+func _update_pundong_hover() -> void:
+	if active_artifact_2 or active_congrats:
+		_set_hovered_pundong(null)
+		return
+
+	_set_hovered_pundong(_get_visible_pundong_at_mouse())
+
+
+func _set_hovered_pundong(pundong_node: Node2D) -> void:
+	if pundong_node and not pundong_node.visible:
+		pundong_node = null
+
+	if hovered_pundong == pundong_node:
+		return
+
+	if hovered_pundong and is_instance_valid(hovered_pundong):
+		_tween_pundong_scale(hovered_pundong, 1.0)
+
+	hovered_pundong = pundong_node
+
+	if hovered_pundong:
+		Input.set_default_cursor_shape(Input.CURSOR_POINTING_HAND)
+		_tween_pundong_scale(hovered_pundong, 1.08)
+	else:
+		Input.set_default_cursor_shape(Input.CURSOR_ARROW)
 
 
 func _show_reward_backdrop() -> void:
@@ -437,6 +477,11 @@ func _is_left_click(event: InputEvent) -> bool:
 
 
 func start_dialogue_balloon_from_trigger(resource: DialogueResource, title: String):
+	if title == "puzzle_intro":
+		GameState.level1_cultural_echo_active = true
+		if bgm and bgm.playing:
+			bgm.stop()
+		GameState.start_cultural_echo_bgm()
 	balloon.show()
 	balloon.start(resource, title)
 

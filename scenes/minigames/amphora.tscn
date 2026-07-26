@@ -48,6 +48,8 @@ scale = Vector2(0.238736, 0.242125)
 sprite_frames = SubResource("SpriteFrames_lmo6u")
 animation = &"glow"
 autoplay = "glow"
+frame = 2
+frame_progress = 0.754331
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 position = Vector2(1.00001, -2)
