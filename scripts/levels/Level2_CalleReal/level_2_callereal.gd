@@ -29,6 +29,8 @@ var active_artifact_2: Node2D = null
 var active_congrats: Node2D = null
 var active_reward_backdrop: ColorRect = null
 var reward_popup_layer: CanvasLayer = null
+var puzzle_intro_dialogue_active := false
+var minigame_pending_after_puzzle_intro := false
 
 @onready var balloon = preload("res://dialogue/balloon.tscn").instantiate()
 var dialogue_res = preload("res://dialogue/main.dialogue")
@@ -96,6 +98,8 @@ func _ready():
 	# --- ADD THE DIALOGUE BALLOON TO THE SCENE TREE ---
 	add_child(balloon) # <--- THIS IS THE MISSING LINE!
 	DialogueManager.mutated.connect(_on_dialogue_mutated) # Connect this here as well for consistency
+	if not DialogueManager.dialogue_ended.is_connected(_on_dialogue_ended):
+		DialogueManager.dialogue_ended.connect(_on_dialogue_ended)
 
 	# --- Transition Zones ---
 	call_deferred("_setup_transition_connections")
@@ -132,6 +136,8 @@ func _setup_transition_connections():
 # --- Fade Out BGM on Exit ---
 func _exit_tree():
 	Input.set_default_cursor_shape(Input.CURSOR_ARROW)
+	if DialogueManager.dialogue_ended.is_connected(_on_dialogue_ended):
+		DialogueManager.dialogue_ended.disconnect(_on_dialogue_ended)
 	if bgm and bgm.playing:
 		var t = create_tween()
 		t.tween_property(bgm, "volume_db", -40, fade_time)\
@@ -173,12 +179,25 @@ func _on_minigame_trigger_body_entered(body: Node2D) -> void:
 	if body != player_instance and not body.is_in_group("Player"):
 		return
 
+	if puzzle_intro_dialogue_active:
+		minigame_pending_after_puzzle_intro = true
+		return
+
+	_start_puzzle_minigame_from_trigger()
+
+
+func _start_puzzle_minigame_from_trigger() -> void:
+	if GameState.puzzle_minigame_completed:
+		return
+	if not player_instance:
+		return
+
 	if player_instance and player_instance.has_method("set_input_enabled"):
 		player_instance.set_input_enabled(false)
 
 	GameState.puzzle_minigame_completed = true
 	GameState.puzzle_minigame_return_scene = CALLE_REAL_SCENE_PATH
-	GameState.player_return_position = PUZZLE_MINIGAME_RETURN_POSITION
+	GameState.player_return_position = player_instance.global_position
 	_disable_minigame_trigger()
 	get_tree().change_scene_to_file(PUZZLE_MINIGAME_SCENE_PATH)
 
@@ -478,12 +497,23 @@ func _is_left_click(event: InputEvent) -> bool:
 
 func start_dialogue_balloon_from_trigger(resource: DialogueResource, title: String):
 	if title == "puzzle_intro":
+		puzzle_intro_dialogue_active = true
 		GameState.level1_cultural_echo_active = true
 		if bgm and bgm.playing:
 			bgm.stop()
 		GameState.start_cultural_echo_bgm()
 	balloon.show()
 	balloon.start(resource, title)
+
+
+func _on_dialogue_ended(_resource: DialogueResource) -> void:
+	if not puzzle_intro_dialogue_active:
+		return
+
+	puzzle_intro_dialogue_active = false
+	if minigame_pending_after_puzzle_intro:
+		minigame_pending_after_puzzle_intro = false
+		_start_puzzle_minigame_from_trigger()
 
 
 # You might also want to add an _on_dialogue_mutated function if you handle mutations in Level 2
