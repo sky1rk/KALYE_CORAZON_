@@ -4,13 +4,13 @@ const FRICTION = 0.1
 var facing_direction: int = 1
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 
-# --- TRANSITION STATE VARIABLES ---
+# --- Transition State ---
 var can_transition: bool = false
 var is_in_transition: bool = false
 var transition_data: Dictionary = {}
 var scene_to_load_after_transition: String = ""
 
-# --- UPDATED NODE REFERENCE ---
+# --- Node References ---
 @onready var animated_sprite: AnimatedSprite2D = $Sprite2D
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
 

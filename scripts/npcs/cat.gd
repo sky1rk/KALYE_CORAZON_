@@ -1,11 +1,11 @@
-# cat.gd (Updated for AnimatedSprite2D with Falloff Movement)
+# cat.gd
 
 extends CharacterBody2D
 
 # --- Constants ---
 const SPEED = 400.0
 const FOLLOW_DISTANCE = 200.0
-const POSITION_THRESHOLD = 20.0  # Increased threshold for better idle detection
+const POSITION_THRESHOLD = 20.0
 const FALLOFF_DISTANCE = 80.0    # Distance at which cat starts slowing down
 
 # --- State Machine ---
@@ -14,8 +14,6 @@ var current_state = State.IDLE
 
 # --- Node References ---
 var player_ref: CharacterBody2D = null
-# UPDATED: Changed from Sprite2D to AnimatedSprite2D.
-# Make sure your node in the scene is named "AnimatedSprite2D".
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var encounter_area: Area2D = $EncounterArea
 
@@ -25,7 +23,6 @@ var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 
 func _ready():
 	encounter_area.body_entered.connect(_on_encounter_area_body_entered)
-	# NEW: Set the starting animation.
 	animated_sprite.play("idle")
 
 
@@ -41,7 +38,6 @@ func _physics_process(delta):
 	match current_state:
 		State.IDLE:
 			velocity.x = lerp(velocity.x, 0.0, 0.1)
-			# NEW: Ensure idle animation is playing when idle.
 			play_animation("idle")
 		State.LEADING:
 			lead_the_player()
@@ -50,20 +46,19 @@ func _physics_process(delta):
 
 	move_and_slide()
 	
-	# UPDATED: Flip the AnimatedSprite2D.
 	if velocity.x > 1:
 		animated_sprite.flip_h = false
 	elif velocity.x < -1:
 		animated_sprite.flip_h = true
 
 
-# NEW: Helper function to avoid resetting the animation every frame.
+# --- Animation ---
 func play_animation(anim_name: String):
 	if animated_sprite.animation != anim_name:
 		animated_sprite.play(anim_name)
 
 
-# --- State Logic Functions ---
+# --- Follow State Logic ---
 
 func lead_the_player():
 	if not player_ref: 
@@ -79,11 +74,10 @@ func lead_the_player():
 
 	# 2. Calculate target position and distance
 	var target_position = player_ref.global_position + Vector2(player_direction * FOLLOW_DISTANCE, 0)
-	var distance_to_target = global_position.distance_to(target_position)
 	var horizontal_distance = abs(target_position.x - global_position.x)
 
 	# 3. Check player movement state
-	var is_player_moving = abs(player_ref.velocity.x) > 10.0  # Increased threshold for better detection
+	var is_player_moving = abs(player_ref.velocity.x) > 10.0
 
 	# 4. Determine if cat should move or be idle
 	if horizontal_distance <= POSITION_THRESHOLD:
@@ -110,7 +104,6 @@ func lead_the_player():
 		play_animation("walk")
 
 
-# NEW: Calculate speed with falloff as cat approaches target
 func calculate_falloff_speed(distance_to_target: float) -> float:
 	if distance_to_target <= POSITION_THRESHOLD:
 		# Very close to target, move very slowly
@@ -136,21 +129,17 @@ func reposition_in_front():
 		var move_speed = calculate_falloff_speed(horizontal_distance)
 		var horizontal_direction = sign(target_position.x - global_position.x)
 		velocity.x = horizontal_direction * move_speed * 1.2  # Slightly faster when repositioning
-		# NEW: Play walk animation when repositioning.
 		play_animation("walk")
 	else:
 		velocity.x = lerp(velocity.x, 0.0, 0.3)  # Smooth stop
 		current_state = State.LEADING
-		# NEW: Play idle animation when it arrives.
 		play_animation("idle")
 
 
 # --- Signal Handling ---
 
-func _on_encounter_area_body_entered(body):
-	# We only need to check if the body that entered is the player.
-	# We no longer need to check the 'cat_can_be_encountered' flag.
-	if body.is_in_group("Player"): # It's slightly better practice to check for a group.
+func _on_encounter_area_body_entered(_body):
+	if _body.is_in_group("Player"):
 		var level_script = get_owner()
 		if level_script and level_script.has_method("start_cat_dialogue"):
 			level_script.start_cat_dialogue()

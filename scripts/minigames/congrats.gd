@@ -3,6 +3,8 @@ extends Node2D
 signal artifact_closed
 
 const CALLE_REAL_SCENE_PATH := "res://scenes/levels/level2_callereal.tscn"
+const CONFIRM_HOVER_SCALE := 1.045
+const CONFIRM_HOVER_TWEEN_SECONDS := 0.18
 
 @onready var click_area: Area2D = $collect/Area2D
 @onready var click_collision_shape: CollisionShape2D = $collect/Area2D/CollisionShape2D
@@ -10,6 +12,9 @@ const CALLE_REAL_SCENE_PATH := "res://scenes/levels/level2_callereal.tscn"
 @onready var confirm_sprite: AnimatedSprite2D = $collect/confirm
 
 var redirecting_to_calle_real := false
+var confirm_base_scale := Vector2.ONE
+var confirm_hovered := false
+var confirm_hover_tween: Tween = null
 
 
 func _ready() -> void:
@@ -21,12 +26,26 @@ func _ready() -> void:
 
 	congrats_sprite.visible = true
 	congrats_sprite.play()
+	confirm_base_scale = confirm_sprite.scale
 
 	if not congrats_sprite.animation_finished.is_connected(_on_congrats_animation_finished):
 		congrats_sprite.animation_finished.connect(_on_congrats_animation_finished)
 
 	confirm_sprite.visible = false
 	confirm_sprite.stop()
+
+
+func _process(_delta: float) -> void:
+	if redirecting_to_calle_real or not confirm_sprite.visible:
+		_set_confirm_hovered(false)
+		return
+
+	_set_confirm_hovered(_is_mouse_inside_confirm_area())
+
+
+func _exit_tree() -> void:
+	if confirm_hovered:
+		Input.set_default_cursor_shape(Input.CURSOR_ARROW)
 
 
 func _input(event: InputEvent) -> void:
@@ -63,6 +82,7 @@ func _activate_confirm() -> void:
 		return
 
 	redirecting_to_calle_real = true
+	_set_confirm_hovered(false)
 	get_viewport().set_input_as_handled()
 	GameState.level1_cultural_echo_active = false
 	GameState.stop_cultural_echo_bgm()
@@ -88,5 +108,24 @@ func _on_congrats_animation_finished() -> void:
 	confirm_sprite.play()
 
 
+func _set_confirm_hovered(should_hover: bool) -> void:
+	if confirm_hovered == should_hover:
+		return
+
+	confirm_hovered = should_hover
+	Input.set_default_cursor_shape(Input.CURSOR_POINTING_HAND if confirm_hovered else Input.CURSOR_ARROW)
+	_tween_confirm_scale(confirm_base_scale * (CONFIRM_HOVER_SCALE if confirm_hovered else 1.0))
+
+
+func _tween_confirm_scale(target_scale: Vector2) -> void:
+	if confirm_hover_tween and confirm_hover_tween.is_valid():
+		confirm_hover_tween.kill()
+
+	confirm_hover_tween = create_tween()
+	confirm_hover_tween.tween_property(confirm_sprite, "scale", target_scale, CONFIRM_HOVER_TWEEN_SECONDS)\
+		.set_trans(Tween.TRANS_SINE)\
+		.set_ease(Tween.EASE_IN_OUT)
+
+
 func _on_area_2d_mouse_entered() -> void:
-	pass # Replace with function body.
+	_set_confirm_hovered(confirm_sprite.visible and not redirecting_to_calle_real)

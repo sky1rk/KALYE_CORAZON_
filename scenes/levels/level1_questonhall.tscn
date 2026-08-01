@@ -1,4 +1,4 @@
-[gd_scene load_steps=40 format=3 uid="uid://20l8s8unujh4"]
+[gd_scene load_steps=39 format=3 uid="uid://20l8s8unujh4"]
 
 [ext_resource type="Script" uid="uid://b273fa3c4vnys" path="res://scripts/levels/Level1_QuestonHall/level_1_questonhall.gd" id="1_1tgic"]
 [ext_resource type="Texture2D" uid="uid://c6wvj7fcocsmy" path="res://assets/sprites/environment/queston_hall/qh sky.png" id="1_xqwct"]
@@ -97,20 +97,6 @@ turbulence_noise_scale = 2.671
 turbulence_noise_speed_random = 0.72
 turbulence_influence_min = 0.0
 turbulence_influence_max = 0.02
-
-[sub_resource type="GDScript" id="GDScript_ssf6e"]
-script/source = "extends AudioStreamPlayer
-
-
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	pass # Replace with function body.
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
-"
 
 [node name="Level1_QuestonHall" type="Node2D" node_paths=PackedStringArray("player", "cat")]
 script = ExtResource("1_1tgic")
@@ -222,7 +208,6 @@ scale = Vector2(9.8, 11.32)
 shape = SubResource("RectangleShape2D_echjx")
 
 [node name="UFLeft" type="Area2D" parent="0/TransitionZones" groups=["TransitionZones"]]
-visible = false
 position = Vector2(-2697, -342)
 collision_mask = 2
 script = ExtResource("5_echjx")
@@ -452,7 +437,6 @@ color = Color(0.57377, 0.522104, 0.490105, 1)
 
 [node name="BackBlur" type="CanvasLayer" parent="."]
 layer = 3
-visible = false
 
 [node name="ColorRect" type="ColorRect" parent="BackBlur"]
 material = SubResource("ShaderMaterial_6esln")
@@ -469,7 +453,6 @@ scale = Vector2(2.08, 2.08)
 
 [node name="orbs" type="CanvasLayer" parent="."]
 layer = 9
-visible = false
 follow_viewport_enabled = true
 follow_viewport_scale = 2.0
 
@@ -482,7 +465,6 @@ process_material = SubResource("ParticleProcessMaterial_xqwct")
 
 [node name="leaves" type="CanvasLayer" parent="."]
 layer = 10
-visible = false
 follow_viewport_enabled = true
 follow_viewport_scale = 3.0
 
@@ -498,7 +480,6 @@ process_material = SubResource("ParticleProcessMaterial_xmad2")
 [node name="BGMPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("18_xr5fd")
 autoplay = true
-script = SubResource("GDScript_ssf6e")
 
 [connection signal="body_entered" from="MinigameTrigger" to="." method="_on_minigame_trigger_body_entered"]
 [connection signal="body_entered" from="0/TransitionZones/GFLeft" to="0/TransitionZones/GFLeft" method="_on_body_entered"]

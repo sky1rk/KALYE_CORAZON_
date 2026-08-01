@@ -307,7 +307,7 @@ shape = SubResource("RectangleShape2D_44cfe")
 [node name="Sprite2D" type="AnimatedSprite2D" parent="."]
 scale = Vector2(0.320945, 0.314397)
 sprite_frames = SubResource("SpriteFrames_1kkfl")
-animation = &"idle_books"
+animation = &"idle"
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(0, -113.233)

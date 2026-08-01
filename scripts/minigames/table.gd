@@ -3,20 +3,27 @@ extends Node2D
 const PUZZLE_MINIGAME_SCENE_PATH := "res://scenes/minigames/minigame_puzzle.tscn"
 const TABLE_SCENE_PATH := "res://scenes/minigames/table.tscn"
 const CALLE_REAL_SCENE_PATH := "res://scenes/levels/level2_callereal.tscn"
-const CALLE_REAL_TABLE_RETURN_POSITION := Vector2(-143, 620)
+const CALLE_REAL_TABLE_RETURN_POSITION := Vector2(-100, 620)
 const CALLE_REAL_TABLE_FRONT_POSITION := Vector2(-83, 689)
+const CALLE_REAL_VENDOR_LEFT_RETURN_POSITION := Vector2(0, 689)
 const TABLE_PLAYER_CENTER_POSITION := Vector2(1080, 704)
 const TABLE_PUZZLE_STARTED_FLAG := "table_puzzle_started"
 const TABLE_PUZZLE_FINISHED_FLAG := "table_puzzle_finished"
 const LEVEL2_PUNDONG_REWARD_COLLECTED_FLAG := "level2_pundong_reward_collected"
+const ENDING_CALLE_REAL_DIALOGUE_PENDING_FLAG := "ending_calle_real_dialogue_pending"
 const PUZZLE_INTRO_TRIGGER_ID := "puzzle_intro_table"
-const STACKED_PHOTOS_DIALOGUE_DISTANCE := 240.0
+const STACKED_PHOTOS_DIALOGUE_DISTANCE := 420.0
+const STACKED_PHOTOS_EXIT_PADDING := 10.0
 const ARTIFACT_2_SCENE := preload("res://scenes/minigames/artifact_2.tscn")
 const CONGRATS_SCENE := preload("res://scenes/minigames/congrats.tscn")
 const POPUP_OPEN_DURATION := 0.18
 const POPUP_START_SCALE := 0.88
 const REWARD_BACKDROP_ALPHA := 0.55
 const REWARD_BACKDROP_FADE_DURATION := 0.18
+const FAMILIAR_PLACES_BGM_PATH := "res://assets/bgm/bgm1_FamiliarPlaces.mp3"
+const FAMILIAR_PLACES_BGM_START_VOLUME_DB := -40.0
+const FAMILIAR_PLACES_BGM_TARGET_VOLUME_DB := 0.0
+const FAMILIAR_PLACES_BGM_FADE_DURATION := 2.0
 
 @onready var scene_camera: Camera2D = $Camera2D
 @onready var player: CharacterBody2D = get_node_or_null("player") as CharacterBody2D
@@ -31,6 +38,7 @@ const REWARD_BACKDROP_FADE_DURATION := 0.18
 @onready var balloon = preload("res://dialogue/balloon.tscn").instantiate()
 
 var dialogue_res: DialogueResource = preload("res://dialogue/main.dialogue")
+var stacked_photos_base_scale := Vector2.ONE
 var stacked_photos_sprite_base_scale := Vector2.ONE
 var stacked_photos_tween: Tween = null
 var opening_puzzle := false
@@ -49,9 +57,12 @@ var active_reward_backdrop: ColorRect = null
 var reward_popup_layer: CanvasLayer = null
 var stacked_photos_hovered := false
 var stacked_photos_dialogue_active := false
+var stacked_photos_intro_finished := false
 var stacked_photos_near_player := false
 var vendor_intro_active := false
 var vendor_intro_finished := false
+var familiar_places_bgm: AudioStreamPlayer = null
+var familiar_places_bgm_tween: Tween = null
 
 
 func _ready() -> void:
@@ -73,6 +84,7 @@ func _ready() -> void:
 	_place_player_after_table_puzzle()
 
 	add_child(balloon)
+	_start_familiar_places_bgm_if_needed()
 	if not GameState.get_story_flag(TABLE_PUZZLE_STARTED_FLAG):
 		call_deferred("_start_vendor_intro_dialogue")
 	else:
@@ -80,6 +92,8 @@ func _ready() -> void:
 
 
 func _exit_tree() -> void:
+	_stop_familiar_places_bgm()
+
 	if not opening_puzzle and not active_congrats:
 		_stop_stacked_photos_cultural_echo_if_waiting()
 
@@ -139,11 +153,12 @@ func _input(event: InputEvent) -> void:
 		_open_pundong_reward(clicked_pundong)
 		return
 
-	if not GameState.puzzle_minigame_completed and _is_mouse_over_stacked_photos():
+	if _can_interact_with_stacked_photos() and _is_mouse_over_stacked_photos():
 		_open_puzzle_minigame()
 
 
 func _setup_stacked_photos_interaction() -> void:
+	stacked_photos_base_scale = stacked_photos.scale
 	stacked_photos_sprite_base_scale = stacked_photos_sprite.scale
 	if GameState.puzzle_minigame_completed:
 		stacked_photos_area.input_pickable = false
@@ -157,10 +172,14 @@ func _setup_stacked_photos_interaction() -> void:
 		stacked_photos_area.mouse_exited.connect(_on_stacked_photos_mouse_exited)
 	if not stacked_photos_area.input_event.is_connected(_on_stacked_photos_input_event):
 		stacked_photos_area.input_event.connect(_on_stacked_photos_input_event)
+	if not stacked_photos_area.body_entered.is_connected(_on_stacked_photos_body_entered):
+		stacked_photos_area.body_entered.connect(_on_stacked_photos_body_entered)
+	if not stacked_photos_area.body_exited.is_connected(_on_stacked_photos_body_exited):
+		stacked_photos_area.body_exited.connect(_on_stacked_photos_body_exited)
 
 
 func _on_stacked_photos_mouse_entered() -> void:
-	_set_stacked_photos_hovered(true)
+	_set_stacked_photos_hovered(_can_interact_with_stacked_photos())
 
 
 func _on_stacked_photos_mouse_exited() -> void:
@@ -168,14 +187,31 @@ func _on_stacked_photos_mouse_exited() -> void:
 
 
 func _on_stacked_photos_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
-	if opening_puzzle or GameState.puzzle_minigame_completed or not _is_left_click(event):
+	if not _can_interact_with_stacked_photos() or not _is_left_click(event):
 		return
 
 	_open_puzzle_minigame()
 
 
+func _on_stacked_photos_body_entered(body: Node2D) -> void:
+	if not _is_player_body(body) or not _can_update_stacked_photos_intro_proximity():
+		return
+
+	stacked_photos_near_player = true
+	_set_stacked_photos_hovered(true)
+	if not stacked_photos_dialogue_active and not balloon.visible:
+		_start_stacked_photos_dialogue()
+
+
+func _on_stacked_photos_body_exited(body: Node2D) -> void:
+	if not _is_player_body(body):
+		return
+
+	_stop_stacked_photos_cultural_echo_if_waiting()
+
+
 func _open_puzzle_minigame() -> void:
-	if GameState.puzzle_minigame_completed:
+	if not _can_interact_with_stacked_photos():
 		return
 
 	opening_puzzle = true
@@ -183,6 +219,7 @@ func _open_puzzle_minigame() -> void:
 	get_viewport().set_input_as_handled()
 	GameState.set_story_flag(TABLE_PUZZLE_STARTED_FLAG, true)
 	GameState.level1_cultural_echo_active = true
+	_stop_familiar_places_bgm()
 	GameState.start_cultural_echo_bgm()
 	GameState.puzzle_minigame_completed = true
 	GameState.puzzle_minigame_return_scene = TABLE_SCENE_PATH
@@ -339,10 +376,12 @@ func _show_congrats() -> void:
 
 func _on_congrats_closed() -> void:
 	GameState.set_story_flag(LEVEL2_PUNDONG_REWARD_COLLECTED_FLAG, true)
+	GameState.set_story_flag(ENDING_CALLE_REAL_DIALOGUE_PENDING_FLAG, true)
 	_mark_puzzle_intro_trigger_handled()
-	GameState.player_return_position = CALLE_REAL_TABLE_FRONT_POSITION
+	GameState.player_return_position = CALLE_REAL_VENDOR_LEFT_RETURN_POSITION
 	GameState.level1_cultural_echo_active = false
 	GameState.stop_cultural_echo_bgm()
+	_start_familiar_places_bgm_if_needed()
 	active_congrats = null
 	_restore_player_input_after_reward_popups()
 
@@ -451,9 +490,15 @@ func _return_to_calle_real_when_dialogue_ends() -> void:
 
 
 func _on_dialogue_ended(_resource: DialogueResource) -> void:
+	if stacked_photos_dialogue_active:
+		stacked_photos_dialogue_active = false
+		stacked_photos_intro_finished = true
+		return
+
 	if vendor_intro_active:
 		vendor_intro_active = false
 		vendor_intro_finished = true
+		call_deferred("_try_start_stacked_photos_dialogue_if_near")
 
 	if return_to_calle_real_after_dialogue:
 		return
@@ -545,17 +590,19 @@ func _tween_stacked_photos_scale(target_scale: Vector2) -> void:
 		stacked_photos_tween.kill()
 
 	stacked_photos_tween = create_tween()
-	stacked_photos_tween.tween_property(stacked_photos_sprite, "scale", target_scale, 0.16)\
+	stacked_photos_tween.tween_property(stacked_photos, "scale", target_scale, 0.16)\
 		.set_trans(Tween.TRANS_SINE)\
 		.set_ease(Tween.EASE_OUT)
 
 
 func _update_stacked_photos_hover() -> void:
-	_set_stacked_photos_hovered(not opening_puzzle and not GameState.puzzle_minigame_completed and _is_mouse_over_stacked_photos())
+	var should_hover := _is_mouse_over_stacked_photos()\
+		and (_can_interact_with_stacked_photos() or (GameState.level1_cultural_echo_active and not GameState.get_story_flag(TABLE_PUZZLE_STARTED_FLAG)))
+	_set_stacked_photos_hovered(should_hover)
 
 
 func _set_stacked_photos_hovered(should_hover: bool) -> void:
-	if should_hover and (opening_puzzle or GameState.puzzle_minigame_completed):
+	if should_hover and not _can_interact_with_stacked_photos() and not GameState.level1_cultural_echo_active:
 		should_hover = false
 
 	if stacked_photos_hovered == should_hover:
@@ -564,22 +611,25 @@ func _set_stacked_photos_hovered(should_hover: bool) -> void:
 	stacked_photos_hovered = should_hover
 	if stacked_photos_hovered:
 		Input.set_default_cursor_shape(Input.CURSOR_POINTING_HAND)
-		_tween_stacked_photos_scale(stacked_photos_sprite_base_scale * 1.08)
+		_tween_stacked_photos_scale(stacked_photos_base_scale * 1.08)
 	else:
 		if not hovered_pundong:
 			Input.set_default_cursor_shape(Input.CURSOR_ARROW)
-		_tween_stacked_photos_scale(stacked_photos_sprite_base_scale)
+		_tween_stacked_photos_scale(stacked_photos_base_scale)
 
 
 func _update_stacked_photos_proximity() -> void:
-	if not player or opening_puzzle or GameState.puzzle_minigame_completed:
-		return
-	if GameState.get_story_flag(TABLE_PUZZLE_STARTED_FLAG):
-		return
-	if not vendor_intro_finished:
+	if not _can_update_stacked_photos_intro_proximity():
 		return
 
-	var is_near := player.global_position.distance_to(stacked_photos.global_position) <= STACKED_PHOTOS_DIALOGUE_DISTANCE
+	var distance_to_photos := player.global_position.distance_to(stacked_photos.global_position)
+	var is_near := distance_to_photos <= STACKED_PHOTOS_DIALOGUE_DISTANCE
+	var should_cut_intro := stacked_photos_near_player and distance_to_photos > STACKED_PHOTOS_DIALOGUE_DISTANCE + STACKED_PHOTOS_EXIT_PADDING
+
+	if should_cut_intro:
+		_stop_stacked_photos_cultural_echo_if_waiting()
+		return
+
 	if stacked_photos_near_player != is_near:
 		stacked_photos_near_player = is_near
 		if not stacked_photos_near_player:
@@ -588,10 +638,26 @@ func _update_stacked_photos_proximity() -> void:
 
 	if not stacked_photos_near_player:
 		return
-	if balloon.visible:
+	if stacked_photos_dialogue_active:
+		return
+	if stacked_photos_intro_finished or balloon.visible:
 		return
 
 	_start_stacked_photos_dialogue()
+
+
+func _can_update_stacked_photos_intro_proximity() -> bool:
+	if not player or opening_puzzle or GameState.puzzle_minigame_completed:
+		return false
+	if GameState.get_story_flag(TABLE_PUZZLE_STARTED_FLAG):
+		return false
+	if vendor_intro_active or vendor_choice_open or return_to_calle_real_after_dialogue:
+		return false
+	return true
+
+
+func _can_interact_with_stacked_photos() -> bool:
+	return stacked_photos_intro_finished and not opening_puzzle and not GameState.puzzle_minigame_completed
 
 
 func _start_stacked_photos_dialogue() -> void:
@@ -600,9 +666,22 @@ func _start_stacked_photos_dialogue() -> void:
 
 	stacked_photos_dialogue_active = true
 	GameState.level1_cultural_echo_active = true
+	_stop_familiar_places_bgm()
 	GameState.start_cultural_echo_bgm()
 	balloon.show()
 	balloon.start(dialogue_res, "puzzle_table_intro")
+
+
+func _try_start_stacked_photos_dialogue_if_near() -> void:
+	await get_tree().physics_frame
+	if not _can_update_stacked_photos_intro_proximity():
+		return
+	if not stacked_photos_near_player:
+		return
+	if balloon.visible:
+		return
+
+	_start_stacked_photos_dialogue()
 
 
 func _stop_stacked_photos_cultural_echo_if_waiting() -> void:
@@ -610,8 +689,53 @@ func _stop_stacked_photos_cultural_echo_if_waiting() -> void:
 		return
 
 	stacked_photos_dialogue_active = false
+	stacked_photos_near_player = false
+	stacked_photos_intro_finished = false
+	_set_stacked_photos_hovered(false)
+	if balloon and balloon.visible:
+		balloon.hide()
 	GameState.level1_cultural_echo_active = false
 	GameState.stop_cultural_echo_bgm()
+	_start_familiar_places_bgm_if_needed()
+
+
+func _start_familiar_places_bgm_if_needed() -> void:
+	if GameState.level1_cultural_echo_active:
+		_stop_familiar_places_bgm()
+		return
+
+	if not familiar_places_bgm:
+		familiar_places_bgm = AudioStreamPlayer.new()
+		familiar_places_bgm.name = "BGMPlayer"
+		familiar_places_bgm.stream = load(FAMILIAR_PLACES_BGM_PATH) as AudioStream
+		add_child(familiar_places_bgm)
+
+	if not familiar_places_bgm or not familiar_places_bgm.stream:
+		return
+
+	if familiar_places_bgm_tween and familiar_places_bgm_tween.is_valid():
+		familiar_places_bgm_tween.kill()
+
+	if not familiar_places_bgm.playing:
+		familiar_places_bgm.volume_db = FAMILIAR_PLACES_BGM_START_VOLUME_DB
+		familiar_places_bgm.play()
+
+	familiar_places_bgm_tween = create_tween()
+	var volume_tweener := familiar_places_bgm_tween.tween_property(familiar_places_bgm, "volume_db", FAMILIAR_PLACES_BGM_TARGET_VOLUME_DB, FAMILIAR_PLACES_BGM_FADE_DURATION)
+	if volume_tweener:
+		volume_tweener.set_trans(Tween.TRANS_SINE)
+		volume_tweener.set_ease(Tween.EASE_IN_OUT)
+
+
+func _stop_familiar_places_bgm() -> void:
+	if familiar_places_bgm_tween and familiar_places_bgm_tween.is_valid():
+		familiar_places_bgm_tween.kill()
+
+	if familiar_places_bgm and familiar_places_bgm.playing:
+		familiar_places_bgm.stop()
+
+	if familiar_places_bgm:
+		familiar_places_bgm.volume_db = FAMILIAR_PLACES_BGM_START_VOLUME_DB
 
 
 func _tween_pundong_scale(pundong_node: Node2D, scale_multiplier: float) -> void:

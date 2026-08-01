@@ -98,10 +98,10 @@ func _on_puzzle_piece_dropped(puzzle_piece: Area2D, drop_zone: Area2D) -> void:
 		puzzle_piece.slide_back()
 
 
-func _set_drop_zone_border_visible(drop_zone: Area2D, is_visible: bool) -> void:
+func _set_drop_zone_border_visible(drop_zone: Area2D, should_show: bool) -> void:
 	var border_sprite := drop_zone.get_node_or_null("Sprite2D") as Sprite2D
 	if border_sprite:
-		border_sprite.visible = is_visible
+		border_sprite.visible = should_show
 
 
 func _check_for_win() -> void:

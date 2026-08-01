@@ -28,6 +28,10 @@ const POPUP_OPEN_DURATION := 2.0
 const POPUP_START_SCALE := 0.15
 const REWARD_BACKDROP_ALPHA := 0.62
 const REWARD_BACKDROP_FADE_DURATION := 0.2
+const FAMILIAR_PLACES_BGM_PATH := "res://assets/bgm/bgm1_FamiliarPlaces.mp3"
+const FAMILIAR_PLACES_BGM_START_VOLUME_DB := -40.0
+const FAMILIAR_PLACES_BGM_TARGET_VOLUME_DB := 0.0
+const FAMILIAR_PLACES_BGM_FADE_DURATION := 2.0
 
 # Faculty leave animation settings.
 const FACULTY_LEAVE_WALK_DISTANCE := 1400.0
@@ -40,8 +44,7 @@ const FACULTY_LEAVE_DIALOGUE_TITLE := "faculty_leave"
 
 # Dialogue shown when Caleb gets close enough to the bookshelf papers.
 const BOOKSHELF_INTRO_DIALOGUE_TITLE := "bookshelf_papers_intro"
-const BOOKSHELF_INTRO_TRIGGER_ID := "office_bookshelf_papers_intro"
-const BOOKSHELF_INTRO_AFTER_MINIGAME_TRIGGER_ID := "office_bookshelf_papers_intro_after_minigame"
+const LEVEL1_AMPHORA_COLLECTED_FLAG := "level1_amphora_collected"
 
 # Bookshelf interaction bounds and camera zoom values.
 const BOOKSHELF_NEAR_AREA_POSITION := Vector2(200.0, -10.0)
@@ -62,7 +65,10 @@ var clicked_reward_amphora: Node2D = null
 var active_reward_backdrop: ColorRect = null
 var bookshelf_echo_waiting_for_minigame_click := false
 var bookshelf_echo_continuing_to_minigame := false
+var familiar_places_bgm: AudioStreamPlayer = null
+var familiar_places_bgm_tween: Tween = null
 
+# --- Scene Lifecycle ---
 func _ready() -> void:
 	# Add the dialogue balloon used by all office conversations.
 	add_child(balloon)
@@ -80,6 +86,7 @@ func _ready() -> void:
 	# Hide amphoras before Persevere, then reveal exactly one after Persevere.
 	_refresh_office_amphoras()
 	_refresh_office_paper_visibility()
+	_start_familiar_places_bgm_if_needed()
 
 	# Remove the faculty immediately if the story already says he left.
 	var faculty_already_left := GameState.get_story_flag(OFFICE_FACULTY_LEAVE_COMPLETED_FLAG)
@@ -176,6 +183,7 @@ func _input(event: InputEvent) -> void:
 		_handle_bookshelf_mess_click()
 
 
+# --- Bookshelf Minigame Entry ---
 func _on_bookshelf_trigger_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
 	# Handles direct clicks on the bookshelf paper hitbox.
 	if event is not InputEventMouseButton:
@@ -293,11 +301,18 @@ func _refresh_office_paper_visibility() -> void:
 		paper_instance.visible = not (GameState.office_post_minigame_choice_pending or GameState.persevere_minigame_completed)
 
 
+# --- Amphora Reward ---
 func _refresh_office_amphoras() -> void:
 	# Hide every amphora before Persevere; after Persevere, reveal only one authored amphora.
 	var amphora_nodes := _get_office_amphoras()
 	if amphora_nodes.is_empty():
 		GameState.office_visible_amphora_name = ""
+		return
+
+	if GameState.get_story_flag(LEVEL1_AMPHORA_COLLECTED_FLAG):
+		GameState.office_visible_amphora_name = ""
+		for amphora_node in amphora_nodes:
+			_set_amphora_enabled(amphora_node, false)
 		return
 
 	if not GameState.persevere_minigame_completed:
@@ -364,6 +379,9 @@ func _set_amphora_enabled(amphora_node: Node2D, enabled: bool) -> void:
 
 func _on_amphora_clicked(amphora_node: Node2D) -> void:
 	# Shows the artifact only when the currently visible post-Persevere amphora is clicked.
+	if GameState.get_story_flag(LEVEL1_AMPHORA_COLLECTED_FLAG):
+		return
+
 	if not _is_post_minigame_office_active():
 		return
 
@@ -382,6 +400,9 @@ func _on_amphora_clicked(amphora_node: Node2D) -> void:
 
 func _try_handle_amphora_click_at_mouse() -> bool:
 	# Backup click path in case the amphora Area2D does not emit input_event.
+	if GameState.get_story_flag(LEVEL1_AMPHORA_COLLECTED_FLAG):
+		return false
+
 	if not _is_post_minigame_office_active():
 		return false
 
@@ -473,6 +494,9 @@ func _show_congrats() -> void:
 
 
 func _on_congrats_closed() -> void:
+	GameState.set_story_flag(LEVEL1_AMPHORA_COLLECTED_FLAG, true)
+	_refresh_office_amphoras()
+	GameState.check_gameon_unlock()
 	active_congrats = null
 	_restore_player_input_after_artifact_popups()
 
@@ -498,6 +522,7 @@ func _restore_player_input_after_artifact_popups() -> void:
 	_hide_reward_backdrop()
 
 
+# --- Reward Popup UI ---
 func _play_popup_open_transition(popup: Node2D) -> void:
 	var target_scale := popup.scale
 	popup.scale = target_scale * POPUP_START_SCALE
@@ -562,6 +587,7 @@ func _get_amphora_from_collider(collider: Node) -> Node2D:
 	return null
 
 
+# --- Bookshelf Proximity ---
 func _is_mouse_inside_bookshelf_trigger() -> bool:
 	# Extra rectangle check for clicks that pass through the general input route.
 	if not bookshelf_trigger:
@@ -677,22 +703,14 @@ func _can_start_bookshelf_intro_dialogue() -> bool:
 	return true
 
 
-func _get_bookshelf_intro_trigger_id() -> String:
-	if GameState.office_post_minigame_choice_pending or _is_post_minigame_office_active():
-		return BOOKSHELF_INTRO_AFTER_MINIGAME_TRIGGER_ID
-
-	if GameState.persevere_minigame_completed and GameState.persevere_minigame_return_scene == OFFICE_SCENE_PATH:
-		return BOOKSHELF_INTRO_AFTER_MINIGAME_TRIGGER_ID
-
-	return BOOKSHELF_INTRO_TRIGGER_ID
-
-
+# --- Office Dialogue Flow ---
 func _start_bookshelf_intro_dialogue() -> void:
 	# Opens the dialogue that points Caleb toward the bookshelf papers.
 	active_office_dialogue_mode = "bookshelf_near_intro"
 	bookshelf_echo_waiting_for_minigame_click = false
 	bookshelf_echo_continuing_to_minigame = false
 	_connect_dialogue_ended_once()
+	_stop_familiar_places_bgm()
 	GameState.start_cultural_echo_bgm()
 	balloon.show()
 	balloon.start(dialogue_res, BOOKSHELF_INTRO_DIALOGUE_TITLE)
@@ -771,6 +789,7 @@ func _on_office_dialogue_ended(_resource: DialogueResource) -> void:
 		if GameState.office_leave_requested:
 			GameState.office_leave_requested = false
 			GameState.office_post_minigame_choice_pending = false
+			GameState.level1_cultural_echo_active = false
 			GameState.stop_cultural_echo_bgm()
 			if not GameState.persevere_minigame_completed:
 				GameState.trigger_level1_minigame_on_return = true
@@ -831,6 +850,7 @@ func _can_start_exit_choice_dialogue() -> bool:
 	return true
 
 
+# --- Faculty Office Sequence ---
 func _on_dialogue_mutated(data: Dictionary) -> void:
 	# Records the player's leave/stay choice from the dialogue file.
 	if data.get("mutation") == "office_leave":
@@ -838,6 +858,7 @@ func _on_dialogue_mutated(data: Dictionary) -> void:
 	elif data.get("mutation") == "office_stay":
 		GameState.office_leave_requested = false
 	elif data.get("mutation") == "faculty_cultural_echo_start":
+		_stop_familiar_places_bgm()
 		GameState.start_cultural_echo_bgm()
 	elif data.get("mutation") == "faculty_pause_sound_stop":
 		_show_books_after_faculty_instruction()
@@ -878,6 +899,7 @@ func _show_books_after_faculty_instruction() -> void:
 		books_instance.visible = true
 
 
+# --- Audio ---
 func _stop_bookshelf_echo_if_minigame_was_not_clicked() -> void:
 	if not bookshelf_echo_waiting_for_minigame_click:
 		return
@@ -886,7 +908,48 @@ func _stop_bookshelf_echo_if_minigame_was_not_clicked() -> void:
 		return
 
 	bookshelf_echo_waiting_for_minigame_click = false
+	GameState.level1_cultural_echo_active = false
 	GameState.stop_cultural_echo_bgm()
+	_start_familiar_places_bgm_if_needed()
+
+
+func _start_familiar_places_bgm_if_needed() -> void:
+	if GameState.level1_cultural_echo_active:
+		_stop_familiar_places_bgm()
+		return
+
+	if not familiar_places_bgm:
+		familiar_places_bgm = AudioStreamPlayer.new()
+		familiar_places_bgm.name = "BGMPlayer"
+		familiar_places_bgm.stream = load(FAMILIAR_PLACES_BGM_PATH) as AudioStream
+		add_child(familiar_places_bgm)
+
+	if not familiar_places_bgm or not familiar_places_bgm.stream:
+		return
+
+	if familiar_places_bgm_tween and familiar_places_bgm_tween.is_valid():
+		familiar_places_bgm_tween.kill()
+
+	if not familiar_places_bgm.playing:
+		familiar_places_bgm.volume_db = FAMILIAR_PLACES_BGM_START_VOLUME_DB
+		familiar_places_bgm.play()
+
+	familiar_places_bgm_tween = create_tween()
+	var volume_tweener := familiar_places_bgm_tween.tween_property(familiar_places_bgm, "volume_db", FAMILIAR_PLACES_BGM_TARGET_VOLUME_DB, FAMILIAR_PLACES_BGM_FADE_DURATION)
+	if volume_tweener:
+		volume_tweener.set_trans(Tween.TRANS_SINE)
+		volume_tweener.set_ease(Tween.EASE_IN_OUT)
+
+
+func _stop_familiar_places_bgm() -> void:
+	if familiar_places_bgm_tween and familiar_places_bgm_tween.is_valid():
+		familiar_places_bgm_tween.kill()
+
+	if familiar_places_bgm and familiar_places_bgm.playing:
+		familiar_places_bgm.stop()
+
+	if familiar_places_bgm:
+		familiar_places_bgm.volume_db = FAMILIAR_PLACES_BGM_START_VOLUME_DB
 
 
 func _play_player_animation(animation_name: String) -> void:

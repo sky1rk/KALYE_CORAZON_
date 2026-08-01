@@ -8,9 +8,6 @@ extends CharacterBody2D
 @export var end_offset_x: float = 0.0
 @export var dialogue_title: String = "faculty_intro"
 @export var escort_follow_distance: float = 140.0
-@export var escort_pause_dialogue_title: String = "faculty_escort_pause"
-@export var escort_pause_trigger_ratio: float = 0.45
-@export var escort_pause_delay: float = 0.35
 @export var dash_speed: float = 520.0
 @export var dash_spawn_margin: float = 80.0
 @export var dash_warning_distance: float = 180.0
@@ -23,7 +20,6 @@ const DECLINED_FACULTY_HELP_FLAG := "declined_faculty_help"
 # --- Movement Bounds and Interaction State ---
 var walk_start_x: float
 var walk_end_x: float
-var escort_pause_x: float
 var dash_target_x: float
 var dash_intro_player: CharacterBody2D = null
 var dash_warning_triggered := false
@@ -33,8 +29,6 @@ var presence_enabled := true
 var player_in_range: CharacterBody2D = null
 var is_conversing := false
 var is_escorting := false
-var is_paused_for_dialogue := false
-var escort_pause_triggered := false
 var escort_player: CharacterBody2D = null
 var pause_sfx_player: AudioStreamPlayer
 var idle_animation_name := "idle"
@@ -48,7 +42,6 @@ var walk_animation_name := "walking"
 func _ready() -> void:
 	# Prepare escort limits, and initial idle state when the NPC is added.
 	_resolve_walk_bounds()
-	escort_pause_x = walk_start_x + ((walk_end_x - walk_start_x) * escort_pause_trigger_ratio)
 	if global_position.x > walk_start_x:
 		global_position.x = walk_start_x
 	_disable_interaction()
@@ -73,14 +66,6 @@ func _physics_process(_delta: float) -> void:
 		velocity.x = 0.0
 		if player_in_range:
 			face_player_for_interaction(player_in_range)
-		play_idle_animation()
-		move_and_slide()
-		return
-
-	# Escort pause holds the faculty in place until the dialogue resumes movement.
-	if is_paused_for_dialogue:
-		velocity.x = 0.0
-		face_escort_direction("idle")
 		play_idle_animation()
 		move_and_slide()
 		return
@@ -265,27 +250,6 @@ func lead_the_way() -> void:
 		finish_escort()
 
 
-func trigger_escort_pause() -> void:
-	# Stop the escort briefly and ask the level to open the pause dialogue.
-	if is_paused_for_dialogue:
-		return
-
-	escort_pause_triggered = true
-	is_paused_for_dialogue = true
-	velocity.x = 0.0
-	play_idle_animation()
-	play_escort_pause_sound()
-	await get_tree().create_timer(escort_pause_delay).timeout
-
-	var level_script = get_owner()
-	if level_script and level_script.has_method("start_dialogue_balloon_from_trigger"):
-		var dialogue_resource = preload("res://dialogue/main.dialogue")
-		DialogueManager.dialogue_ended.connect(_on_escort_pause_dialogue_ended, CONNECT_ONE_SHOT)
-		level_script.start_dialogue_balloon_from_trigger(dialogue_resource, escort_pause_dialogue_title)
-	else:
-		is_paused_for_dialogue = false
-
-
 func play_escort_pause_sound() -> void:
 	# Play the alert sound and pause the level music during the escort beat.
 	if pause_sfx_player:
@@ -349,8 +313,6 @@ func _on_faculty_dialogue_ended(_resource: DialogueResource, player_node: Charac
 func begin_escort(player_node: CharacterBody2D) -> void:
 	# Switch from hallway pacing/interacting into the existing escort sequence.
 	is_escorting = true
-	is_paused_for_dialogue = false
-	escort_pause_triggered = false
 	escort_player = player_node
 	player_in_range = null
 	if escort_player and escort_player.has_method("set_input_enabled"):
@@ -361,11 +323,6 @@ func begin_escort(player_node: CharacterBody2D) -> void:
 		set_player_facing(escort_player, escort_direction, "walking_books")
 	face_escort_direction()
 	play_walk_animation()
-
-
-func _on_escort_pause_dialogue_ended(_resource: DialogueResource) -> void:
-	# Resume the escort after the pause dialogue closes.
-	is_paused_for_dialogue = false
 
 
 func finish_escort() -> void:

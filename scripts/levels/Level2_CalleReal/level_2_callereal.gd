@@ -8,13 +8,28 @@ const CALLE_REAL_SCENE_PATH := "res://scenes/levels/level2_callereal.tscn"
 const PUZZLE_MINIGAME_SCENE_PATH := "res://scenes/minigames/minigame_puzzle.tscn"
 const PUZZLE_MINIGAME_RETURN_POSITION := Vector2(57.5433, 614.273)
 const CALLE_REAL_TABLE_FRONT_POSITION := Vector2(-83, 689)
+const CALLE_REAL_VENDOR_LEFT_RETURN_POSITION := Vector2(0, 689)
 const LEVEL2_PUNDONG_REWARD_COLLECTED_FLAG := "level2_pundong_reward_collected"
+const ENDING_CALLE_REAL_DIALOGUE_TITLE := "ending_calle_real"
+const ENDING_CALLE_REAL_DIALOGUE_PENDING_FLAG := "ending_calle_real_dialogue_pending"
+const ENDING_CALLE_REAL_DIALOGUE_SHOWN_FLAG := "ending_calle_real_dialogue_shown"
 const ARTIFACT_2_SCENE := preload("res://scenes/minigames/artifact_2.tscn")
 const CONGRATS_SCENE := preload("res://scenes/minigames/congrats.tscn")
 const POPUP_OPEN_DURATION := 0.18
 const POPUP_START_SCALE := 0.88
 const REWARD_BACKDROP_ALPHA := 0.55
 const REWARD_BACKDROP_FADE_DURATION := 0.18
+const ENDING_CALLE_REAL_DIALOGUE_DELAY := 0.7
+const ENDING_TEXT_FONT := preload("res://assets/fonts/VT323-Regular.ttf")
+const ENDING_TEXT_FADE_SECONDS := 1.2
+const ENDING_TEXT_HOLD_SECONDS := 3.2
+const ENDING_TEXT_FONT_SIZE := 50
+
+var ending_texts = [
+	"A place lives as long as its stories are remembered.",
+	"Our heritage lives through the traditions we continue to practice.",
+	"KALYE CORAZÓN - The heart remembers."
+]
 
 @onready var bgm = $BGMPlayer
 var fade_time := 2.0  # seconds for fade-in/out
@@ -31,6 +46,8 @@ var active_reward_backdrop: ColorRect = null
 var reward_popup_layer: CanvasLayer = null
 var puzzle_intro_dialogue_active := false
 var minigame_pending_after_puzzle_intro := false
+var ending_calle_real_dialogue_active := false
+var ending_text_sequence_active := false
 
 @onready var balloon = preload("res://dialogue/balloon.tscn").instantiate()
 var dialogue_res = preload("res://dialogue/main.dialogue")
@@ -39,15 +56,16 @@ func _ready():
 	print("DEBUG: Entered Level 2 (Calle Real)!")
 	var returning_from_puzzle_minigame := GameState.level1_cultural_echo_active and GameState.puzzle_minigame_completed and GameState.puzzle_minigame_return_scene == CALLE_REAL_SCENE_PATH
 	var keep_cultural_echo_playing := GameState.level1_cultural_echo_active and GameState.puzzle_minigame_completed and GameState.puzzle_minigame_return_scene == CALLE_REAL_SCENE_PATH
+	var should_start_ending_calle_real_dialogue := GameState.get_story_flag(ENDING_CALLE_REAL_DIALOGUE_PENDING_FLAG)
 	if not keep_cultural_echo_playing:
 		GameState.level1_cultural_echo_active = false
 		GameState.stop_cultural_echo_bgm()
 	
 	# --- LOAD SCENES IF NOT ASSIGNED IN INSPECTOR ---
 	if player_scene == null:
-		player_scene = preload("res://scenes/player/caleb.tscn") # TODO: update path
+		player_scene = preload("res://scenes/player/caleb.tscn")
 	if cat_scene == null:
-		cat_scene = preload("res://scenes/npcs/cat.tscn")       # TODO: update path
+		cat_scene = preload("res://scenes/npcs/cat.tscn")
 	
 	# --- PLAYER INSTANTIATION AND POSITIONING ---
 	player_instance = player_scene.instantiate()
@@ -59,6 +77,8 @@ func _ready():
 	# Apply player return position or default to Level 2 start
 	if GameState.player_return_position != null:
 		player_instance.global_position = GameState.player_return_position
+		if should_start_ending_calle_real_dialogue:
+			_set_player_idle_facing_right()
 		player_instance.set_input_enabled(true)
 		var camera = player_instance.get_node_or_null("Camera2D")
 		if camera:
@@ -107,6 +127,8 @@ func _ready():
 	_update_pundong_visibility()
 	_setup_pundong_interactions()
 	_play_pundong_animations()
+	if should_start_ending_calle_real_dialogue:
+		call_deferred("_start_ending_calle_real_dialogue")
 	
 	# --- BGM Fade In ---
 	if bgm and not returning_from_puzzle_minigame:
@@ -118,7 +140,7 @@ func _ready():
 			.set_ease(Tween.EASE_IN_OUT)
 
 # --- Transition Back to Level 1 ---
-func _on_level1_transition_triggered(transition_data: Dictionary):
+func _on_level1_transition_triggered(_transition_data: Dictionary):
 	print("DEBUG: _on_level1_transition_triggered called!")
 	GameState.returning_from_level = "level2"
 	GameState.player_return_position = Vector2(-1764, 689)
@@ -371,7 +393,8 @@ func _show_congrats() -> void:
 
 func _on_congrats_closed() -> void:
 	GameState.set_story_flag(LEVEL2_PUNDONG_REWARD_COLLECTED_FLAG, true)
-	GameState.player_return_position = CALLE_REAL_TABLE_FRONT_POSITION
+	GameState.set_story_flag(ENDING_CALLE_REAL_DIALOGUE_PENDING_FLAG, true)
+	GameState.player_return_position = CALLE_REAL_VENDOR_LEFT_RETURN_POSITION
 	active_congrats = null
 	_restore_player_input_after_reward_popups()
 
@@ -506,7 +529,55 @@ func start_dialogue_balloon_from_trigger(resource: DialogueResource, title: Stri
 	balloon.start(resource, title)
 
 
+func _start_ending_calle_real_dialogue() -> void:
+	ending_calle_real_dialogue_active = true
+	GameState.set_story_flag(ENDING_CALLE_REAL_DIALOGUE_PENDING_FLAG, false)
+	GameState.set_story_flag(ENDING_CALLE_REAL_DIALOGUE_SHOWN_FLAG, true)
+	_set_player_idle_facing_right()
+	_disable_vendor_interaction_prompt()
+	await get_tree().create_timer(ENDING_CALLE_REAL_DIALOGUE_DELAY).timeout
+	if not is_inside_tree():
+		return
+	if player_instance and player_instance.has_method("set_input_enabled"):
+		player_instance.set_input_enabled(false)
+	balloon.show()
+	balloon.start(dialogue_res, ENDING_CALLE_REAL_DIALOGUE_TITLE)
+
+
+func _set_player_idle_facing_right() -> void:
+	if not player_instance:
+		return
+
+	player_instance.velocity = Vector2.ZERO
+	player_instance.facing_direction = 1
+	var animated_sprite := player_instance.get_node_or_null("Sprite2D") as AnimatedSprite2D
+	if animated_sprite:
+		animated_sprite.play("idle")
+		animated_sprite.flip_h = true
+
+
+func _disable_vendor_interaction_prompt() -> void:
+	var vendor_node := get_node_or_null("0/vendor")
+	if not vendor_node:
+		return
+
+	if vendor_node.has_method("set_interaction_enabled"):
+		vendor_node.set_interaction_enabled(false)
+	else:
+		var prompt := vendor_node.get_node_or_null("Label") as Label
+		if prompt:
+			prompt.hide()
+		var encounter_area := vendor_node.get_node_or_null("EncounterArea") as Area2D
+		if encounter_area:
+			encounter_area.monitoring = false
+
+
 func _on_dialogue_ended(_resource: DialogueResource) -> void:
+	if ending_calle_real_dialogue_active:
+		ending_calle_real_dialogue_active = false
+		call_deferred("_show_ending_text_sequence")
+		return
+
 	if not puzzle_intro_dialogue_active:
 		return
 
@@ -514,6 +585,57 @@ func _on_dialogue_ended(_resource: DialogueResource) -> void:
 	if minigame_pending_after_puzzle_intro:
 		minigame_pending_after_puzzle_intro = false
 		_start_puzzle_minigame_from_trigger()
+
+
+func _show_ending_text_sequence() -> void:
+	if ending_text_sequence_active:
+		return
+
+	ending_text_sequence_active = true
+	if player_instance and player_instance.has_method("set_input_enabled"):
+		player_instance.set_input_enabled(false)
+
+	var ending_layer := CanvasLayer.new()
+	ending_layer.name = "EndingTextLayer"
+	ending_layer.layer = 250
+	add_child(ending_layer)
+
+	var black_overlay := ColorRect.new()
+	black_overlay.name = "BlackOverlay"
+	black_overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	black_overlay.color = Color(0, 0, 0, 1)
+	black_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	ending_layer.add_child(black_overlay)
+
+	var ending_label := Label.new()
+	ending_label.name = "EndingText"
+	ending_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	ending_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	ending_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	ending_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	ending_label.add_theme_font_override("font", ENDING_TEXT_FONT)
+	ending_label.add_theme_font_size_override("font_size", ENDING_TEXT_FONT_SIZE)
+	ending_label.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	ending_label.offset_left = -420.0
+	ending_label.offset_top = -60.0
+	ending_label.offset_right = 420.0
+	ending_label.offset_bottom = 60.0
+	ending_layer.add_child(ending_label)
+
+	for text in ending_texts:
+		ending_label.show()
+		ending_label.modulate.a = 0.0
+		ending_label.text = text
+
+		var tween := create_tween()
+		tween.tween_property(ending_label, "modulate:a", 1.0, ENDING_TEXT_FADE_SECONDS)
+		tween.tween_interval(ENDING_TEXT_HOLD_SECONDS)
+		tween.tween_property(ending_label, "modulate:a", 0.0, ENDING_TEXT_FADE_SECONDS)
+		await tween.finished
+
+	ending_text_sequence_active = false
+	GameState.reset_for_new_run()
+	get_tree().change_scene_to_file("res://scenes/levels/startscreen.tscn")
 
 
 # You might also want to add an _on_dialogue_mutated function if you handle mutations in Level 2

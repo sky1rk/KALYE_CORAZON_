@@ -111,24 +111,19 @@ Caleb: "Maybe I should head back upstairs."
 
 ~ cat_first_see
 do DialogueManager.mutated.emit({"mutation": "level1_cat_cultural_echo_start"})
-Caleb: "Is that a cat?"
+Caleb: "A cat here?"
+Caleb: "Wait... what is that sound?"
 => END
 
 ~ cant_go_there
 Caleb: "Oh, nothing to see here."
 => END
 
-# New Dialogue for Level 2: Calle Real (Caleb and Eveready only)
-
-~ calle_real_initial_entry_cat
-Caleb: "Woah... it's a lot. The noise, the people... I can barely think."
-Mango: "Keep your head up, kid. "
-Caleb: "Woah, what? When did this cat changed colors?"
-=> END
+# New Dialogue for Level 2: Calle Real
 
 ~ calle_real_initial_entry
-Caleb: "Hmm. This is weird."
-Caleb: "This place is usually bustling with people. Why is there only one stall left open?"
+Caleb: "Huh? Why am I suddenly here?!"
+Caleb: "This place is usually bustling... why is only one stall left open?"
 => END
 
 ~ calle_real_street_vehicles_cat
@@ -181,4 +176,11 @@ Vendor: "Look around some more or leave?"
 Caleb: Funny. On the first floor, it's almost completely empty, yet the traffic outside is so loud you can barely think.
 Caleb: But looking at the whole picture from up here...
 Caleb: You realize how peaceful it is to just step away from the noise.
+=> END
+
+~ ending_calle_real
+Caleb: “The sound… it isn’t coming from one place.”
+Vendor: “Because it belongs to everyone who has walked these streets.”
+Caleb: “So the artifacts were calling me?”
+Vendor: “No, Caleb. The city was reminding you to listen.”
 => END

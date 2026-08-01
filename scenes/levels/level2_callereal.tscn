@@ -260,11 +260,13 @@ position = Vector2(-143, 620)
 position = Vector2(38, 566)
 
 [node name="AnimatedSprite2D" parent="0/pundong1" index="0"]
-position = Vector2(44.5, 54)
-scale = Vector2(0.386957, 0.382813)
-frame_progress = 0.864284
+z_index = 1
+position = Vector2(45, 53)
+scale = Vector2(0.391304, 0.375)
+frame_progress = 0.396557
 
 [node name="Sprite2D" parent="0/pundong1" index="1"]
+z_index = 1
 position = Vector2(48, 48)
 
 [node name="bulletin" type="Node2D" parent="0"]
@@ -279,10 +281,13 @@ texture = ExtResource("13_lke6v")
 position = Vector2(-200, 662)
 
 [node name="AnimatedSprite2D" parent="0/pundong" index="0"]
-position = Vector2(40, 73)
-scale = Vector2(0.151899, 0.142578)
+z_index = 1
+position = Vector2(38.5, 70)
+scale = Vector2(0.123418, 0.119141)
+frame_progress = 0.332842
 
 [node name="Sprite2D" parent="0/pundong" index="1"]
+z_index = 1
 position = Vector2(40, 66)
 scale = Vector2(0.0513888, 0.0583333)
 
@@ -293,10 +298,13 @@ position = Vector2(32, 58)
 position = Vector2(-928, 656)
 
 [node name="AnimatedSprite2D" parent="0/pundong3" index="0"]
-position = Vector2(40, 50.5)
-scale = Vector2(0.303797, 0.260742)
+z_index = 1
+position = Vector2(38.5, 50.5)
+scale = Vector2(0.268987, 0.25293)
+frame_progress = 0.655725
 
 [node name="Sprite2D" parent="0/pundong3" index="1"]
+z_index = 1
 position = Vector2(41.5, 40.5)
 scale = Vector2(0.109722, 0.123611)
 

@@ -20,7 +20,7 @@ func _ready():
 func show_next():
 
 	if current >= reflection.size():
-		get_tree().change_scene_to_file("res://scenes/levels/startscreen.tscn")
+		get_tree().change_scene_to_file("res://addons/game_on/auth_panel.tscn")
 		return
 
 	text_label.show()

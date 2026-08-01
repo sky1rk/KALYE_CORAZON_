@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://b87ndbdlq4nep" path="res://scripts/levels/menu/reflection.gd" id="1_7xg8f"]
 [ext_resource type="Texture2D" uid="uid://bk8x1o345oj7w" path="res://assets/sprites/environment/intro/blackscreen.jpg" id="2_5bdj7"]
 [ext_resource type="FontFile" uid="uid://t5il60al4iak" path="res://assets/fonts/VT323-Regular.ttf" id="3_b2b5y"]
-[ext_resource type="AudioStream" uid="uid://es1cj6uwut3q" path="res://assets/bgm/door-close.mp3" id="4_7xg8f"]
+[ext_resource type="AudioStream" uid="uid://d1dx1d2vl43qu" path="res://assets/bgm/door-close.mp3" id="4_7xg8f"]
 
 [node name="reflection" type="Node2D"]
 script = ExtResource("1_7xg8f")
@@ -17,7 +17,7 @@ mouse_filter = 2
 color = Color(0, 0, 0, 1)
 
 [node name="ReflectionText" type="Label" parent="."]
-anchors_preset = -1
+anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5

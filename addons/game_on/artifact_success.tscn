@@ -1,0 +1,63 @@
+[gd_scene load_steps=2 format=3 uid="uid://doam5rfgr4hw5"]
+
+[ext_resource type="Script" uid="uid://br8xpn3lcc3cw" path="res://addons/game_on/artifact_success.gd" id="1_artifact_success"]
+
+[node name="ArtifactSuccess" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_artifact_success")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.8)
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer"]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="Title" type="Label" parent="CenterContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Level Complete!"
+horizontal_alignment = 1
+
+[node name="ArtifactName" type="Label" parent="CenterContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Artifact Name"
+horizontal_alignment = 1
+
+[node name="ArtifactDescription" type="Label" parent="CenterContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Artifact Description"
+horizontal_alignment = 1
+
+[node name="Thumbnail" type="TextureRect" parent="CenterContainer/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(400, 240)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="BackButton" type="Button" parent="CenterContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Back to Menu"

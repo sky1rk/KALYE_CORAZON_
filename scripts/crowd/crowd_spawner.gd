@@ -15,8 +15,6 @@ func _ready():
 	spawn_timer.timeout.connect(_on_spawn_timer_timeout)
 
 func _on_spawn_timer_timeout():
-	# --- THIS IS THE NEW, CORRECTED LOGIC ---
-
 	# 1. Get the current camera from the viewport.
 	var camera = get_viewport().get_camera_2d()
 	if not camera:

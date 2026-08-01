@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 DialogueManager="*res://addons/dialogue_manager/dialogue_manager.gd"
 GameState="*res://scripts/GameState.gd"
+GameOnPortal="*res://addons/game_on/game_on_connect.gd"
 
 [display]
 
@@ -27,7 +28,12 @@ window/size/viewport_height=1080
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/dialogue_manager/plugin.cfg")
+enabled=PackedStringArray("res://addons/dialogue_manager/plugin.cfg", "res://addons/game_on/plugin.cfg")
+
+[game_on]
+
+api_url="https://gameonportal.ph"
+game_id="bae33bd3-b4d6-4b04-a3f0-e0ad0535ebf2"
 
 [input]
 

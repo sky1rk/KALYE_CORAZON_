@@ -43,7 +43,7 @@ func _input_event(_viewport, event, _shape_idx):
 			check_for_drop_zone()
 
 
-func _process(delta):
+func _process(_delta):
 	# While dragging, make the tile follow the mouse.
 	if is_dragging:
 		global_position = get_global_mouse_position() + drag_offset

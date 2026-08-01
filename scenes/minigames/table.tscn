@@ -115,11 +115,13 @@ position = Vector2(611, 768)
 scale = Vector2(2.25, 2.25)
 
 [node name="AnimatedSprite2D" parent="pundong" index="0"]
-position = Vector2(-11.5555, -17.332)
-scale = Vector2(0.135021, 0.119793)
-frame_progress = 0.0728521
+z_index = 1
+position = Vector2(-13.1111, -17.5555)
+scale = Vector2(0.127989, 0.116753)
+frame_progress = 0.836574
 
 [node name="Sprite2D" parent="pundong" index="1"]
+z_index = 1
 position = Vector2(-12.4445, -23.1111)
 scale = Vector2(0.054321, 0.054321)
 
@@ -134,12 +136,13 @@ position = Vector2(705, 696)
 scale = Vector2(2.25, 2.25)
 
 [node name="AnimatedSprite2D" parent="pundong2" index="0"]
-position = Vector2(20.889, 25.2258)
-scale = Vector2(0.143461, 0.110902)
-frame = 1
-frame_progress = 0.050845
+z_index = 1
+position = Vector2(20.6667, 23.7778)
+scale = Vector2(0.136428, 0.112413)
+frame_progress = 0.981427
 
 [node name="Sprite2D" parent="pundong2" index="1"]
+z_index = 1
 position = Vector2(21.8334, 19.0556)
 scale = Vector2(0.0578701, 0.0557098)
 
@@ -153,11 +156,12 @@ scale = Vector2(2.25, 2.25)
 position = Vector2(615.111, 245.333)
 
 [node name="AnimatedSprite2D" parent="CanvasLayer/pundong1" index="0"]
-position = Vector2(-2.08322, 14.2226)
-scale = Vector2(0.369807, 0.381944)
-frame_progress = 0.699152
+position = Vector2(-2.44435, 12.4448)
+scale = Vector2(0.353623, 0.364583)
+frame_progress = 0.56725
 
 [node name="Sprite2D" parent="CanvasLayer/pundong1" index="1"]
+z_index = 1
 position = Vector2(0, 7.11111)
 scale = Vector2(0.120833, 0.130555)
 
@@ -175,6 +179,7 @@ position = Vector2(-1.52588e-05, -3.24249e-05)
 scale = Vector2(0.0553125, 0.0645)
 texture = ExtResource("10_yuebw")
 
+[editable path="player"]
 [editable path="vendor"]
 [editable path="stackedphotos/photos"]
 [editable path="pundong"]

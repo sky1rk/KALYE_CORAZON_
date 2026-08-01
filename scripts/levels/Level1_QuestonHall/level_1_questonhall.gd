@@ -28,13 +28,13 @@ var hallway_faculty_spawn_pending: bool = false
 
 # --- Cat and Minigame State ---
 var cat_is_following: bool = false
-var minigame_completed: bool = false
 var active_artifact_1: Node2D = null
 var active_congrats: Node2D = null
 var clicked_reward_amphora: Node2D = null
 var active_reward_backdrop: ColorRect = null
 var reward_popup_layer: CanvasLayer = null
 
+# --- Scene Lifecycle ---
 func _ready():
 	var returning_from_office_before_minigame := GameState.trigger_level1_minigame_on_return and not GameState.persevere_minigame_completed
 
@@ -93,13 +93,11 @@ func _ready():
 		if cat and cat.has_method("start_following"):
 			print("DEBUG: Making cat start following player")
 			
-			# --- NEW: Position cat next to player when returning from Level 2 ---
+			# Keep the cat beside Caleb when returning from Level 2.
 			if GameState.returning_from_level == "level2" or GameState.returning_from_level == "":
-				# Get the FOLLOW_DISTANCE from the cat (same logic as Level 2)
 				var cat_spawn_offset = Vector2(player.facing_direction * cat.FOLLOW_DISTANCE, 0)
 				cat.global_position = player.global_position + cat_spawn_offset
 				
-				# Orient the cat correctly based on the player's facing direction
 				if player.facing_direction < 0:
 					cat.animated_sprite.flip_h = true
 				else:
@@ -146,6 +144,8 @@ func _exit_tree():
 		t.tween_property(bgm, "volume_db", -40, fade_time).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 		t.finished.connect(func(): bgm.stop())
 
+
+# --- Dialogue Events ---
 func _on_dialogue_mutated(data: Dictionary):
 	# Route dialogue mutations into level state changes and scene transitions.
 	if data.get("mutation") == "follow_cat":
@@ -296,13 +296,13 @@ func _on_level_exit_trigger_body_entered(body):
 
 func _on_minigame_trigger_body_entered(body):
 	# Start the paper minigame, or route the faculty escort into the office scene.
-	if body != player or minigame_completed: return
+	if body != player: return
 	if faculty and faculty.is_escorting:
 		_disable_minigame_trigger()
 		GameState.pending_office_dialogue_title = "faculty_escort_pause"
 		GameState.persevere_minigame_return_scene = "res://scenes/minigames/office.tscn"
 		GameState.player_return_position = null
-		get_tree().change_scene_to_file("res://scenes/minigames/office.tscn")
+		get_tree().call_deferred("change_scene_to_file", "res://scenes/minigames/office.tscn")
 		return
 	elif not GameState.get_story_flag("helped_faculty"):
 		_start_paper_minigame_intro()
@@ -323,15 +323,12 @@ func _start_paper_minigame_intro() -> void:
 	balloon.show()
 	balloon.start(dialogue_res, "paper_minigame_start")
 	GameState.persevere_minigame_return_scene = "res://scenes/levels/level1_questonhall.tscn"
-	GameState.player_return_position = player.global_position if player else null
+	if player:
+		GameState.player_return_position = player.global_position
+	else:
+		GameState.player_return_position = null
 	_disable_minigame_trigger()
 
-func _on_minigame_completed():
-	# Disable repeat minigame entry and return control to the player.
-	minigame_completed = true
-	$MinigameTrigger.get_child(0).set_disabled(true)
-	player.set_input_enabled(true)
-	
 func start_dialogue_balloon_from_trigger(resource: DialogueResource, title: String):
 	# Shared helper used by NPCs and triggers to open the dialogue balloon.
 	if title == "cat_first_see":
@@ -340,6 +337,7 @@ func start_dialogue_balloon_from_trigger(resource: DialogueResource, title: Stri
 	balloon.start(resource, title)
 
 
+# --- Audio ---
 func _pause_bgm_for_faculty() -> void:
 	# Temporarily pause hallway BGM during faculty sound/dialogue moments.
 	if bgm and bgm.playing and not bgm.stream_paused:
@@ -383,6 +381,7 @@ func _disable_minigame_trigger() -> void:
 	$MinigameTrigger.call_deferred("set_monitoring", false)
 
 
+# --- Amphora Reward ---
 func _refresh_level1_amphoras() -> void:
 	var amphora_nodes := _get_level1_amphoras()
 	if amphora_nodes.is_empty():
@@ -472,7 +471,10 @@ func _set_amphora_enabled(amphora_node: Node2D, enabled: bool) -> void:
 
 
 func _on_amphora_clicked(amphora_node: Node2D) -> void:
-	print("DEBUG LEVEL1 AMPHORA: clicked ", amphora_node.name if amphora_node else "<null>", " unlocked=", GameState.level1_amphora_unlocked, " collected=", GameState.get_story_flag(LEVEL1_AMPHORA_COLLECTED_FLAG))
+	var amphora_name := "<null>"
+	if amphora_node:
+		amphora_name = amphora_node.name
+	print("DEBUG LEVEL1 AMPHORA: clicked ", amphora_name, " unlocked=", GameState.level1_amphora_unlocked, " collected=", GameState.get_story_flag(LEVEL1_AMPHORA_COLLECTED_FLAG))
 	if not GameState.level1_amphora_unlocked:
 		return
 	if GameState.get_story_flag(LEVEL1_AMPHORA_COLLECTED_FLAG):
@@ -613,6 +615,7 @@ func _show_congrats() -> void:
 
 
 func _on_congrats_closed() -> void:
+	GameState.check_gameon_unlock()
 	active_congrats = null
 	_restore_player_input_after_artifact_popups()
 
@@ -638,6 +641,7 @@ func _restore_player_input_after_artifact_popups() -> void:
 	_hide_reward_backdrop()
 
 
+# --- Reward Popup UI ---
 func _play_popup_open_transition(popup: Node2D) -> void:
 	var target_scale := popup.scale
 	popup.scale = target_scale * POPUP_START_SCALE
@@ -698,13 +702,3 @@ func _get_reward_popup_layer() -> CanvasLayer:
 	reward_popup_layer.layer = 100
 	add_child(reward_popup_layer)
 	return reward_popup_layer
-
-
-func _get_level_camera() -> Camera2D:
-	if not player:
-		return null
-	return player.get_node_or_null("Camera2D") as Camera2D
-
-
-func _on_office_trigger_body_entered(_body: Node2D) -> void:
-	pass # Replace with function body.
